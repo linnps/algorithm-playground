@@ -4,38 +4,174 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Self-Balancing Trees · Algorithm Playground</title>
+  <meta name="description" content="BST vs AVL vs Red-Black, side-by-side. Same insertion sequence; watch the rotations keep the height in check.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="trees.css">
 </head>
 <body data-page="05-trees">
   <main class="page">
+
     <header class="hero">
       <h1>05 · Self-Balancing Trees</h1>
-      <p class="tagline">BST vs AVL vs Red-Black · same insertion sequence · watch the rotations.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-        Reuses graph-rendering primitives from #04.
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Type or paste a sequence of integers. They're inserted in order into
-        three trees — a plain BST, an AVL tree, and a Red-Black tree —
-        rendered side-by-side. The plain BST tilts into a chain; the
-        AVL and RB trees stay balanced via rotations.
+      <p class="tagline">
+        BST vs AVL vs Red-Black · same insertion sequence · watch the rotations.
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <section>
+      <div class="controls">
+        <input type="text" id="seq-input" class="seq-input"
+               placeholder="comma-separated integers, e.g. 5, 3, 8, 1, 4, 7, 9">
+        <button id="run">Insert sequence</button>
+        <label>
+          <span>Speed <span class="value" id="speed-value">3×</span></span>
+          <input type="range" id="speed" min="1" max="10" value="3" step="1">
+        </label>
+        <button id="pause" class="secondary">Pause</button>
+        <button id="clear" class="secondary">Clear all</button>
+        <span class="progress">step <span id="progress">—</span></span>
+      </div>
+
+      <div class="controls preset-buttons" style="margin-top:8px;">
+        <span style="font-size:12px; color:var(--muted); margin-right:4px;">try:</span>
+        <button data-seq="1, 2, 3, 4, 5, 6, 7, 8, 9, 10">ascending (worst case for BST)</button>
+        <button data-seq="10, 9, 8, 7, 6, 5, 4, 3, 2, 1">descending</button>
+        <button data-seq="5, 3, 8, 1, 4, 7, 9, 2, 6, 10">random-ish (BST-friendly)</button>
+        <button data-seq="50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 55, 65, 75, 90">15-key bst-friendly</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="tree-board" id="tree-board">
+        <!-- 3 panels injected by trees.js -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        Each panel is a different binary search tree implementation.  All
+        three receive the same insertion sequence one key at a time;
+        after each insert the panels re-render, with the freshly inserted
+        key briefly ringed in red.  Stats above each panel report
+        <code>height</code> (depth of the deepest leaf) and
+        <code>nodes</code> (total node count).
+      </p>
+      <p>
+        The discriminating metric is <strong>height</strong>.  For
+        <em>n</em> nodes, the theoretically minimum height is
+        ⌈log₂(n+1)⌉; a self-balancing tree gets you within a small
+        constant factor of that. The plain BST gives no such guarantee.
+      </p>
+
+      <div class="note">
+        <div class="label">START WITH THE ASCENDING PRESET</div>
+        Insert <code>1, 2, 3, ..., 10</code>.  The plain BST degenerates
+        into a 10-deep linked list — it's a "tree" only in name.  AVL
+        and Red-Black both stay around height 4–5, exactly as their
+        invariants promise.
+      </div>
+
+      <h2>The three trees</h2>
+
+      <h3>BST &nbsp;
+        <small style="color:var(--muted); font-weight:400;">no rebalancing</small></h3>
+      <p>
+        The naive binary search tree.  Insert by walking from the root,
+        going left if the new key is smaller, right if larger.  No effort
+        to balance — when the input is sorted (or almost sorted) the
+        tree degenerates to a linked list with O(n) lookup.  The
+        <strong style="color:var(--accent);">PATHOLOGICAL</strong> warning
+        on the stat line lights up when height ≥ 0.7 × node count, i.e.
+        when the tree is mostly chain.
+      </p>
+
+      <h3>AVL &nbsp;
+        <small style="color:var(--muted); font-weight:400;">strict height balance</small></h3>
+      <p>
+        Each node stores its <code>height</code> (shown as a small
+        <code>h<i>k</i></code> badge below).  After every insert, walk
+        back up to the root, recompute heights, and rotate whenever the
+        balance factor leaves the range [−1, +1].  This costs slightly
+        more rotations than Red-Black per insert, but maintains a tighter
+        height bound: a 1.44 × log₂(n+2) worst case.
+      </p>
+
+      <h3>Red-Black &nbsp;
+        <small style="color:var(--muted); font-weight:400;">looser balance, fewer rotations</small></h3>
+      <p>
+        Each node is coloured <span style="color:var(--accent); font-weight:700;">red</span>
+        or <span style="color:var(--text); font-weight:700;">black</span>; the
+        invariants are: root is black, no two consecutive reds, every
+        root-to-leaf path has the same number of black nodes.  Looser
+        balance than AVL — height bound is 2 log₂(n+1) — but
+        <em>fewer rotations per insert on average</em>, which is why
+        most language standard libraries (<code>std::map</code>,
+        Java <code>TreeMap</code>, Linux scheduler's CFS) use Red-Black.
+      </p>
+
+      <h2>Why three trees instead of just one balanced version</h2>
+      <p>
+        Every working programmer eventually internalises that
+        "balanced trees are O(log n)" — but the
+        <em>cost of balance</em> isn't usually visualised. AVL is more
+        rigid, RB is more elastic; both achieve the same asymptotic class
+        with very different rotation profiles. Showing them side-by-side
+        on the same input makes the trade-off concrete: AVL trees tend
+        to be a level shorter, Red-Black trees rebalance less aggressively.
+      </p>
+
+      <div class="note">
+        <div class="label">THINGS TO TRY</div>
+        <ul style="margin:8px 0 0 20px;">
+          <li>Insert <code>1, 2, 3, ... 30</code> — BST height 30, AVL ≈ 5, RB ≈ 6.</li>
+          <li>Insert a random permutation of 1..15 — all three trees end up similarly balanced; randomness saves the BST.</li>
+          <li>Insert <code>10, 5, 15, 3, 7, 12, 18</code> — all three trees produce similar shapes since this input is already balanced.</li>
+          <li>Toggle between ascending and descending presets — Red-Black recolours its root after each, AVL flips between left- and right-heavy rotations.</li>
+        </ul>
+      </div>
+
+      <h2>What I learned writing this</h2>
       <ul>
-        <li>Why a plain BST is fragile — sorted-or-near-sorted insertions degrade it to a linked list.</li>
-        <li>The cost of balance: AVL rebalances aggressively (more rotations, tighter height); RB allows looser balance (fewer rotations, slightly higher height).</li>
-        <li>Visual proof of why <code>std::map</code>, <code>java.util.TreeMap</code>, etc. all use Red-Black trees rather than AVL — the rebalance cost is what dominates real workloads.</li>
+        <li>
+          <strong>Red-Black is annoying to implement and pleasant to verify.</strong>
+          The CLRS pseudocode is right but unforgiving — case 1 / 2 / 3 mirror
+          for left-uncle vs right-uncle, parent pointer bookkeeping during
+          rotations, root recolour at the end. Once it's right, the visual
+          test is easy: pick any path from root to leaf and count black nodes.
+          Every path should have the same count.
+        </li>
+        <li>
+          <strong>AVL's rebalance code reads like a four-case match statement.</strong>
+          balance factor &gt; 1 + key &lt; left.key → right rotation.
+          &gt; 1 + key &gt; left.key → left-right rotation.
+          The four lines at the bottom of <code>avlInsert</code> are the entire
+          algorithm.  Rest is just height bookkeeping.
+        </li>
+        <li>
+          <strong>The "in-order x" tree layout is dumb but correct.</strong>
+          Each node gets its own column equal to its in-order rank.
+          Subtrees can never overlap because every node has a unique x slot.
+          More sophisticated layouts (Reingold-Tilford) pack tighter but
+          require two passes; for visualization, the simple version is fine.
+        </li>
+        <li>
+          <strong>The "PATHOLOGICAL" callout pays for itself.</strong>
+          A stat that says "BST height 10, 10 nodes" is technically informative
+          but easy to overlook. "PATHOLOGICAL · degraded to chain" in red
+          immediately tells the visitor what to actually take away.
+        </li>
       </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="trees.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>
