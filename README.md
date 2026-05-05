@@ -19,11 +19,6 @@ card on the [landing page](https://linnps.github.io/algorithm-playground/) and
 watch the algorithm execute step-by-step — no installs, no server, no LLM API,
 runs entirely in your browser.
 
-This is a companion to my [ML portfolio](https://github.com/linnps?tab=repositories&q=ml-)
-on the engineering side: where ML repos demonstrate model-building from
-scratch, this shows algorithmic thinking from scratch — same blue / red / gray
-palette, same "boring code, sharp insights" philosophy.
-
 ---
 
 ## Status
@@ -107,12 +102,8 @@ python3 -m http.server 8080      # → http://localhost:8080/
 
 ## Design principles
 
-These were locked in at project start — see
-[`journal-3.md`](https://github.com/linnps/algorithm-playground) (private)
-for the full handoff doc. Short version:
-
 - **No build tooling, ever.** Code stays inspectable. Repo stays runnable.
-- **Same palette across every demo.** Visual continuity ties the portfolio together.
+- **Same palette across every demo.** Visual continuity holds the site together.
 - **Generators + canvas.** Every algorithm is an ES6 generator yielding
   state snapshots; a single animation loop drives all panels in lockstep.
 - **One repo, one URL.** Visitor opens
@@ -123,21 +114,13 @@ for the full handoff doc. Short version:
 
 ## Roadmap
 
-Each subsequent session converts one stub into a working demo, in this order:
-**Pathfinding → Maze → Graph → Trees → Heap → Hash → DP → Strings → Geometry.**
-The order is chosen to maximize code reuse — later algorithms inherit
-infrastructure (grid renderer, tree layout, etc.) built earlier.
-
-When all 10 are live, this README becomes the index page everyone reads;
-when only 1 is live (today), the live one is the showcase.
+Remaining sections in the order they'll ship:
+**Graph → Trees → Heap → Hash → DP → Strings → Geometry.**
+The order maximises code reuse — later algorithms inherit infrastructure
+(grid renderer, tree layout, etc.) built earlier.
 
 ---
 
 <div align="center">
-<sub>Part of the
-<a href="https://github.com/linnps">linnps</a>
-GitHub portfolio · same palette as the
-<a href="https://github.com/linnps?tab=repositories&q=ml-">ml-XX repos</a>
-and the
-<a href="https://github.com/linnps/linnps">profile cards</a>.</sub>
+<sub>Built with vanilla web platform features. MIT licensed.</sub>
 </div>
