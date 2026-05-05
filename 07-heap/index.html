@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heap &amp; Priority Queue · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="07-heap">
+  <main class="page">
+    <header class="hero">
+      <h1>07 · Heap &amp; Priority Queue</h1>
+      <p class="tagline">Binary heap as an array · sift-up &amp; sift-down · heapsort vs quicksort.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+        Reuses tree-rendering from #05.
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        Watch insertions trigger sift-up and extractions trigger sift-down,
+        with the array view and the tree view kept in sync side-by-side.
+        Then a heapsort-vs-quicksort race using the same starting data —
+        showing heapsort's predictable n log n vs quick's faster average
+        but variable wall-time.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>How a binary heap is just an array with three index arithmetic rules: parent <code>(i-1)/2</code>, left <code>2i+1</code>, right <code>2i+2</code>.</li>
+        <li>Why building a heap is O(n), not O(n log n) — bottom-up sift-down dominates.</li>
+        <li>When you'd actually pick heap sort over quick sort: when worst-case latency matters more than average throughput.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

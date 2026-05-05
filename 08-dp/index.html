@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Programming · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="08-dp">
+  <main class="page">
+    <header class="hero">
+      <h1>08 · Dynamic Programming</h1>
+      <p class="tagline">LCS · edit distance · 0/1 knapsack — DP table fills cell-by-cell.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        Type two strings (for LCS / edit distance) or items + weights
+        (for knapsack). The 2D DP table fills cell-by-cell, colour
+        gradient by value, with the optimal traceback path lit up in
+        red after the table completes.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>The mental shift from "recursive with memoization" (top-down) to "iteratively fill the table" (bottom-up) — same answer, different code shape.</li>
+        <li>Why DP problems often have an obvious recurrence but a non-obvious traceback — the table tells you the cost; the path through the table tells you the solution.</li>
+        <li>The space-optimization trick: most DP tables only need the previous row, so O(n²) space → O(n) is often free.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathfinding · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="02-pathfinding">
+  <main class="page">
+    <header class="hero">
+      <h1>02 · Pathfinding</h1>
+      <p class="tagline">A* · Dijkstra · BFS · DFS — same grid, same start &amp; goal, different exploration orders.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+        This demo is the first of the upcoming algorithm pages.
+        It'll be implemented as the next step in this project.
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        A grid you can sketch walls onto with click-and-drag. Place a
+        <strong style="color:var(--title);">start</strong> and
+        <strong style="color:var(--accent);">goal</strong>, then watch
+        <strong>A*</strong>, <strong>Dijkstra</strong>, <strong>BFS</strong>, and
+        <strong>DFS</strong> run side-by-side, painting visited cells in shades
+        of blue and the final shortest path in red.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>Why A*'s heuristic-guided search reaches the goal with fewer expanded cells than Dijkstra.</li>
+        <li>Why BFS finds shortest paths on unweighted grids but loses optimality the moment you introduce edge weights.</li>
+        <li>Why DFS is *terrible* at finding shortest paths — even though it always finds *a* path eventually.</li>
+        <li>What happens to A* as you swap Manhattan distance for Euclidean, Chebyshev, or no heuristic at all.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

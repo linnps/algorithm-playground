@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hash Tables · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="06-hash">
+  <main class="page">
+    <header class="hero">
+      <h1>06 · Hash Tables</h1>
+      <p class="tagline">Chaining · linear probing · cuckoo hashing — collision resolution made visible.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        A row of buckets, three side-by-side panels — one per collision-resolution
+        strategy. Insert keys and watch each strategy distribute them differently.
+        A load-factor slider shows how each strategy degrades as the table fills:
+        chaining stays graceful, linear probing develops "clusters,"
+        cuckoo hashing eventually fails to insert and triggers a rehash.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>Why a "good" hash function matters more than people think — bad hashes turn linear probing into linked lists.</li>
+        <li>The clustering effect: linear probing's cost grows non-linearly past ~70% load factor.</li>
+        <li>Cuckoo hashing's elegant guarantee — O(1) lookup worst case, even under collisions, at the cost of O(amortized) insertions.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

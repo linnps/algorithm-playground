@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computational Geometry · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="10-geometry">
+  <main class="page">
+    <header class="hero">
+      <h1>10 · Computational Geometry</h1>
+      <p class="tagline">Convex hull · click points · watch Graham's scan trace the boundary.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        Click anywhere on the canvas to drop points. The Graham-scan
+        convex hull recomputes live, with the angular-sort step animated
+        and the cross-product test highlighting which candidate edges
+        get popped from the stack.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>The convex hull is the simplest non-trivial computational-geometry problem and a gateway to sweep-line techniques.</li>
+        <li>Why the cross-product test (rather than angle comparisons) is the right primitive — it's exact in integer arithmetic and avoids floating-point drift.</li>
+        <li>Graham scan's O(n log n) is dominated by the angular sort; the hull-construction sweep itself is O(n).</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

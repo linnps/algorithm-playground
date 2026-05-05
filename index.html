@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algorithm Playground · linnps</title>
+  <meta name="description" content="Interactive CS algorithm visualizations — sort, pathfinding, trees, graphs, DP, strings, geometry. Pure HTML/JS, no build tooling.">
+  <link rel="stylesheet" href="shared/style.css">
+</head>
+<body data-page="home">
+  <main class="page">
+
+    <header class="hero">
+      <h1>Algorithm Playground</h1>
+      <p class="tagline">
+        Ten classical CS algorithms · interactive · pure browser · no build tooling
+      </p>
+      <p class="tagline" style="margin-top:4px; font-size:13px;">
+        Pick a card. Each demo runs entirely in your browser — no installs, no server, no LLM API.
+      </p>
+    </header>
+
+    <section>
+      <div class="algo-grid">
+
+        <a class="algo-card" href="01-sorting/">
+          <div class="num">01 · SORTING</div>
+          <div class="title">Sorting Race</div>
+          <div class="desc">
+            Bubble · Insertion · Selection · Merge · Quick · Heap — six algorithms
+            racing on the same array, side by side.
+          </div>
+          <div class="footer">
+            <span class="status live">live</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="02-pathfinding/">
+          <div class="num">02 · PATHFINDING</div>
+          <div class="title">Pathfinding</div>
+          <div class="desc">
+            A* · Dijkstra · BFS · DFS on a grid with click-to-place walls.
+            Watch each algorithm's exploration and final path.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="03-maze/">
+          <div class="num">03 · MAZE GENERATION</div>
+          <div class="title">Maze Generation</div>
+          <div class="desc">
+            DFS recursive · Prim's · Kruskal's · Wilson's — four algorithms
+            carve mazes with visually distinct styles.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="04-graph/">
+          <div class="num">04 · GRAPH TRAVERSAL</div>
+          <div class="title">Graph Traversal &amp; Topology</div>
+          <div class="desc">
+            Build a directed graph with clicks; watch BFS / DFS / topological
+            sort / Tarjan SCC colour the nodes by depth, order, and component.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="05-trees/">
+          <div class="num">05 · BALANCED TREES</div>
+          <div class="title">Self-Balancing Trees</div>
+          <div class="desc">
+            BST vs AVL vs Red-Black — same insertion sequence, side by side.
+            Watch the rotations keep the height in check.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="06-hash/">
+          <div class="num">06 · HASH TABLES</div>
+          <div class="title">Hash Tables</div>
+          <div class="desc">
+            Chaining · linear probing · cuckoo hashing — slide load factor up
+            and watch collision density shape the bucket distribution.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="07-heap/">
+          <div class="num">07 · HEAP &amp; PQ</div>
+          <div class="title">Heap &amp; Priority Queue</div>
+          <div class="desc">
+            Binary heap as an array — sift-up / sift-down animated, plus a
+            heapsort vs quicksort race using the same data.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="08-dp/">
+          <div class="num">08 · DYNAMIC PROGRAMMING</div>
+          <div class="title">DP Visualizer</div>
+          <div class="desc">
+            LCS · edit distance · 0/1 knapsack — DP table fills cell by cell;
+            traceback path lit up in red.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="09-string/">
+          <div class="num">09 · STRING MATCHING</div>
+          <div class="title">String Matching</div>
+          <div class="desc">
+            KMP failure function build + matching with mismatch jumps,
+            side-by-side with naive O(nm). Watch where the magic happens.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+        <a class="algo-card disabled" href="10-geometry/">
+          <div class="num">10 · GEOMETRY</div>
+          <div class="title">Computational Geometry</div>
+          <div class="desc">
+            Click anywhere to place points; Graham-scan convex hull
+            re-computes live, plus angular-sort traces.
+          </div>
+          <div class="footer">
+            <span class="status soon">coming soon</span>
+            <span style="font-size:11px; color: var(--muted);">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <section style="margin-top:40px;">
+      <div class="note">
+        <div class="label">ABOUT THIS SITE</div>
+        Each demo is a single self-contained HTML file plus a small JS file —
+        no React, no Vue, no bundler, no <code>npm install</code>.
+        Open any file in a browser, it just works.
+        Source code is on
+        <a href="https://github.com/linnps/algorithm-playground" target="_blank" rel="noopener">GitHub</a>;
+        contributions and corrections welcome via PR.
+      </div>
+    </section>
+
+  </main>
+
+  <script src="shared/nav.js"></script>
+  <script src="shared/footer.js"></script>
+</body>
+</html>

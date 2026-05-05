@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>String Matching · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="09-string">
+  <main class="page">
+    <header class="hero">
+      <h1>09 · String Matching</h1>
+      <p class="tagline">KMP · Rabin-Karp · vs naive O(nm) — watch where the magic happens.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        Pick a haystack and a needle. KMP first builds its failure
+        function (animated), then the matching pass — when a mismatch
+        occurs, the needle <em>slides</em> by the failure-function offset
+        instead of restarting from zero. Side-by-side with naive O(nm),
+        you can see KMP completing matches the naive algorithm is still
+        chewing through.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>The failure function is the key insight: pre-compute "if I fail at position k of the needle, how far back can I safely jump?"</li>
+        <li>Why Rabin-Karp's rolling hash makes it preferred for multi-pattern matching — KMP wins for one pattern; Rabin-Karp wins for many.</li>
+        <li>How a problem that looks like O(nm) becomes O(n+m) once you stop throwing away information.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

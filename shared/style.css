@@ -1,0 +1,195 @@
+/* ------------------------------------------------------------------ palette
+   Same colours used across the linnps GitHub portfolio. Edit here once,
+   the entire site updates.
+*/
+:root {
+  --bg:        #FFFFFF;
+  --bg-soft:   #F7F7F5;
+  --grid:      #E5E5E5;
+  --light:     #CCCCCC;
+  --muted:     #7A7A7A;
+  --text:      #333333;
+  --title:     #3B6EA8;   /* primary blue */
+  --title-2:   #9EB7D6;   /* light blue */
+  --accent:    #C04040;   /* accent red */
+  --accent-2:  #E0B0B0;   /* light red */
+}
+
+/* ------------------------------------------------------------------ reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+               "Noto Sans", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg-soft);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--title); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, kbd, pre, samp {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+/* ----------------------------------------------------------------- top nav */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--grid);
+  padding: 12px 24px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
+}
+.topnav .brand {
+  font-weight: 700; color: var(--title);
+  font-size: 16px; margin-right: 12px;
+}
+.topnav .brand:hover { text-decoration: none; }
+.topnav a.nav-link {
+  font-size: 13px; color: var(--muted);
+  padding: 4px 8px; border-radius: 4px;
+}
+.topnav a.nav-link:hover {
+  color: var(--title); background: var(--bg-soft); text-decoration: none;
+}
+.topnav a.nav-link.active {
+  color: var(--title); font-weight: 600;
+  background: var(--bg-soft);
+}
+.topnav .spacer { flex: 1; }
+.topnav .ext {
+  font-size: 12px; color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ layout */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px 24px;
+}
+.page header.hero { text-align: center; padding: 16px 0 32px 0; }
+.hero h1 {
+  font-size: 32px; color: var(--title); font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.hero .tagline {
+  margin-top: 8px; color: var(--muted); font-size: 15px;
+}
+.hero .badges { margin-top: 12px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+
+/* --------------------------------------------------------------- 10 cards */
+.algo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.algo-card {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex; flex-direction: column;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.algo-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--title-2);
+  box-shadow: 0 4px 14px rgba(59, 110, 168, 0.10);
+  text-decoration: none;
+}
+.algo-card .num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--muted); font-size: 11px; letter-spacing: 0.05em;
+}
+.algo-card .title {
+  font-size: 17px; font-weight: 700; color: var(--title);
+  margin: 4px 0 6px 0;
+}
+.algo-card .desc { font-size: 13px; color: var(--text); opacity: 0.85; flex: 1; }
+.algo-card .footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px;
+}
+.algo-card .status {
+  font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  font-weight: 600; letter-spacing: 0.02em;
+}
+.algo-card .status.live {
+  background: rgba(59, 110, 168, 0.12); color: var(--title);
+}
+.algo-card .status.soon {
+  background: var(--bg-soft); color: var(--muted);
+}
+.algo-card.disabled { cursor: default; opacity: 0.7; }
+.algo-card.disabled:hover {
+  transform: none; box-shadow: none; border-color: var(--grid);
+}
+
+/* ---------------------------------------------------------- inner pages */
+.page h2 { color: var(--title); margin: 24px 0 12px 0; font-size: 22px; }
+.page h3 { color: var(--text);  margin: 18px 0 8px 0;  font-size: 16px; }
+.page p  { margin: 8px 0; }
+.page ul { margin: 8px 0 8px 24px; }
+.page > section { margin-bottom: 28px; }
+
+.note {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-left: 3px solid var(--title);
+  padding: 12px 16px; margin: 16px 0;
+  border-radius: 4px;
+}
+.note .label {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--title); letter-spacing: 0.05em; margin-bottom: 4px;
+}
+
+.controls {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center;
+}
+.controls label { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.controls input[type="range"] { width: 140px; accent-color: var(--title); }
+.controls .value { color: var(--text); font-weight: 600; font-family: "JetBrains Mono", monospace; font-size: 13px; }
+.controls button {
+  background: var(--title); color: white; border: 0;
+  padding: 8px 14px; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s ease;
+}
+.controls button:hover { background: #2C5587; }
+.controls button.secondary {
+  background: var(--bg); color: var(--text); border: 1px solid var(--light);
+}
+.controls button.secondary:hover { background: var(--bg-soft); }
+.controls .checks { display: flex; gap: 12px; flex-wrap: wrap; }
+.controls .checks label {
+  flex-direction: row; gap: 6px; align-items: center;
+  color: var(--text); font-size: 13px; cursor: pointer;
+}
+
+/* ---------------------------------------------------------- footer */
+.site-footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 24px 0;
+  border-top: 1px solid var(--grid);
+  margin-top: 64px;
+}
+.site-footer a { color: var(--muted); }
+.site-footer a:hover { color: var(--title); }
+
+/* -------------- responsive ----------------------------------------- */
+@media (max-width: 600px) {
+  .topnav { padding: 10px 12px; gap: 4px 10px; }
+  .topnav a.nav-link { font-size: 12px; padding: 3px 6px; }
+  .hero h1 { font-size: 24px; }
+}

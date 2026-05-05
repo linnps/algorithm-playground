@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Balancing Trees · Algorithm Playground</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body data-page="05-trees">
+  <main class="page">
+    <header class="hero">
+      <h1>05 · Self-Balancing Trees</h1>
+      <p class="tagline">BST vs AVL vs Red-Black · same insertion sequence · watch the rotations.</p>
+    </header>
+    <section>
+      <div class="note">
+        <div class="label">COMING SOON</div>
+        Reuses graph-rendering primitives from #04.
+      </div>
+      <h2>Planned interactive demo</h2>
+      <p>
+        Type or paste a sequence of integers. They're inserted in order into
+        three trees — a plain BST, an AVL tree, and a Red-Black tree —
+        rendered side-by-side. The plain BST tilts into a chain; the
+        AVL and RB trees stay balanced via rotations.
+      </p>
+      <h2>What it teaches</h2>
+      <ul>
+        <li>Why a plain BST is fragile — sorted-or-near-sorted insertions degrade it to a linked list.</li>
+        <li>The cost of balance: AVL rebalances aggressively (more rotations, tighter height); RB allows looser balance (fewer rotations, slightly higher height).</li>
+        <li>Visual proof of why <code>std::map</code>, <code>java.util.TreeMap</code>, etc. all use Red-Black trees rather than AVL — the rebalance cost is what dominates real workloads.</li>
+      </ul>
+      <p style="margin-top:24px;">
+        <a href="../">← Back to all algorithms</a>
+      </p>
+    </section>
+  </main>
+  <script src="../shared/nav.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>

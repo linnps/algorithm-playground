@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Race · Algorithm Playground</title>
+  <meta name="description" content="Six classic sorting algorithms racing side-by-side on the same array. Bubble, Insertion, Selection, Merge, Quick, Heap.">
+  <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="sorting.css">
+</head>
+<body data-page="01-sorting">
+  <main class="page">
+
+    <header class="hero">
+      <h1>01 · Sorting Race</h1>
+      <p class="tagline">
+        Six algorithms · same array · same starting state · who finishes first?
+      </p>
+    </header>
+
+    <section>
+      <div class="controls">
+        <label>
+          <span>Array size <span class="value" id="size-value">60</span></span>
+          <input type="range" id="size" min="10" max="200" value="60" step="2">
+        </label>
+        <label>
+          <span>Speed <span class="value" id="speed-value">8×</span></span>
+          <input type="range" id="speed" min="1" max="40" value="8" step="1">
+        </label>
+        <button id="reset">Shuffle &amp; restart</button>
+        <button id="pause" class="secondary">Pause</button>
+        <div class="checks" id="algo-checks">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="board" id="board">
+        <!-- 6 panels injected here, one per algorithm -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        Each panel runs the <em>same</em> input array through a different
+        sorting algorithm. The bar coloured red is the comparison or swap
+        currently being executed. The number above each panel counts the
+        comparison + write operations performed so far — a more honest
+        metric than wall-clock time, since wall-clock conflates algorithm
+        complexity with browser scheduling.
+      </p>
+
+      <div class="note">
+        <div class="label">IMPLEMENTATION NOTE</div>
+        Each algorithm is written as an
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator"
+           target="_blank" rel="noopener">ES6 generator</a>
+        that <code>yield</code>s a state snapshot at every comparison and
+        swap. The animation loop pulls the next state from each generator
+        (advancing all six in lockstep, modulated by the speed slider) and
+        re-renders the bars on a single canvas per panel.
+        See <a href="https://github.com/linnps/algorithm-playground/blob/main/01-sorting/sorting.js"
+              target="_blank" rel="noopener">sorting.js</a> for the
+        complete source — it's about 250 lines of plain JavaScript.
+      </div>
+
+      <h2>The six algorithms</h2>
+
+      <h3>Bubble sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n²)</small></h3>
+      <p>
+        Repeatedly walk through the array and swap any adjacent pair that's
+        out of order. After each pass, the largest unsorted element is
+        guaranteed to have "bubbled" to the end. Almost never used in
+        practice — but it's the simplest correct sort, and a useful baseline.
+      </p>
+
+      <h3>Insertion sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n²) · O(n) on nearly-sorted input</small></h3>
+      <p>
+        Build the sorted prefix one element at a time, sliding each new
+        element backwards until it lands in the right slot. Surprisingly
+        fast on small or nearly-sorted arrays — many "high-performance"
+        implementations of merge / quick sort fall back to insertion sort
+        for sub-arrays smaller than ~10 elements.
+      </p>
+
+      <h3>Selection sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n²)</small></h3>
+      <p>
+        Repeatedly find the minimum of the unsorted region and swap it to
+        the boundary. Always exactly n²/2 comparisons regardless of input —
+        no best/worst-case asymmetry — but very few writes (n swaps total),
+        which makes it interesting on hardware where writes are expensive.
+      </p>
+
+      <h3>Merge sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n log n) · stable</small></h3>
+      <p>
+        Recursively split, sort each half, then merge. Predictable
+        n log n in the worst case, and <em>stable</em> (preserves the order
+        of equal elements). Uses extra memory for the merge buffer; that
+        cost is why in-place quicksort is often preferred for primitive
+        arrays.
+      </p>
+
+      <h3>Quick sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n log n) avg · O(n²) worst</small></h3>
+      <p>
+        Pick a pivot, partition smaller-vs-larger around it, recurse on
+        each side. With a randomised or median-of-three pivot the worst
+        case becomes vanishingly rare; in practice it's the fastest
+        comparison sort for random data, which is why most language
+        standard libraries use a quicksort variant
+        (often Tim sort or introsort).
+      </p>
+
+      <h3>Heap sort &nbsp; <small style="color:var(--muted); font-weight:400;">O(n log n) worst-case</small></h3>
+      <p>
+        Build a max-heap in O(n), then repeatedly swap the root with the
+        last element and sift down. Same complexity class as merge / quick,
+        but in-place and with a guaranteed worst case. Slightly slower than
+        quick sort in practice due to poorer cache behaviour.
+      </p>
+
+      <h2>What I learned writing this</h2>
+      <ul>
+        <li>
+          <strong>Generators are the perfect abstraction for visualizing iteration.</strong>
+          You write the algorithm in its natural form and just sprinkle <code>yield</code>
+          at the points you want the UI to pause. No state machines, no manual
+          step counters, no weird coroutines — just <code>function*</code>.
+        </li>
+        <li>
+          <strong>Wall-clock comparisons mislead.</strong>
+          On a 60-element array, all six finish in &lt; 50 ms; the visual race only
+          works because we artificially slow each step. The "winner" of the visual
+          race is whichever algorithm has the fewest <em>state-changing operations</em>,
+          which is a different question from "fastest in production."
+        </li>
+        <li>
+          <strong>Canvas beats SVG for this.</strong>
+          For 6 panels × 200 bars × 60 fps re-renders, SVG would be a DOM nightmare.
+          A single <code>&lt;canvas&gt;</code> per panel and a <code>fillRect</code>
+          loop is buttery smooth.
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script src="../shared/nav.js"></script>
+  <script src="sorting.js"></script>
+  <script src="../shared/footer.js"></script>
+</body>
+</html>
