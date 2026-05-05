@@ -4,42 +4,167 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pathfinding · Algorithm Playground</title>
+  <meta name="description" content="A* / Dijkstra / BFS / DFS pathfinding visualised side-by-side. Draw walls, drag the start and goal markers, watch the algorithms explore.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="pathfinding.css">
 </head>
 <body data-page="02-pathfinding">
   <main class="page">
+
     <header class="hero">
       <h1>02 · Pathfinding</h1>
-      <p class="tagline">A* · Dijkstra · BFS · DFS — same grid, same start &amp; goal, different exploration orders.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-        This demo is the first of the upcoming algorithm pages.
-        It'll be implemented as the next step in this project.
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        A grid you can sketch walls onto with click-and-drag. Place a
-        <strong style="color:var(--title);">start</strong> and
-        <strong style="color:var(--accent);">goal</strong>, then watch
-        <strong>A*</strong>, <strong>Dijkstra</strong>, <strong>BFS</strong>, and
-        <strong>DFS</strong> run side-by-side, painting visited cells in shades
-        of blue and the final shortest path in red.
+      <p class="tagline">
+        A* · Dijkstra · BFS · DFS · same grid · same start &amp; goal · who reaches first?
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <section>
+      <div class="controls">
+        <label>
+          <span>Speed <span class="value" id="speed-value">6×</span></span>
+          <input type="range" id="speed" min="1" max="40" value="6" step="1">
+        </label>
+        <button id="reset">Restart</button>
+        <button id="random-walls" class="secondary">Random walls</button>
+        <button id="clear-walls" class="secondary">Clear walls</button>
+        <button id="pause" class="secondary">Pause</button>
+        <div class="checks" id="algo-checks"><!-- populated by JS --></div>
+      </div>
+      <p class="help">
+        <strong>Click + drag</strong> on any panel to paint walls ·
+        <strong>drag the S or G square</strong> to move start / goal ·
+        <strong>right-click drag</strong> (or click on existing walls) to erase.
+        Any edit auto-restarts all four algorithms.
+      </p>
+
+      <div class="pf-legend">
+        <span class="item"><span class="swatch sw-start"></span>start</span>
+        <span class="item"><span class="swatch sw-goal"></span>goal</span>
+        <span class="item"><span class="swatch sw-wall"></span>wall</span>
+        <span class="item"><span class="swatch sw-visited"></span>visited (expanded)</span>
+        <span class="item"><span class="swatch sw-frontier"></span>frontier (queued)</span>
+        <span class="item"><span class="swatch sw-path"></span>final path</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="pf-board" id="pf-board">
+        <!-- 4 panels injected here -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        All four algorithms share the same world: identical grid, identical
+        walls, identical start (S) and goal (G).  When you paint a wall on any
+        panel it appears on all four — the only thing that differs is each
+        algorithm's exploration strategy.
+      </p>
+      <p>
+        Cells turn <span style="color:#9EB7D6;">light blue</span> as the
+        algorithm <em>expands</em> (visits) them, light red while they sit on
+        the frontier waiting to be expanded, and <span style="color:var(--accent);">red</span>
+        once the algorithm picks them as part of the final shortest path.
+        The two stats above each panel — <code>expanded</code> and
+        <code>path</code> length — let you compare efficiency after a run.
+      </p>
+
+      <h2>The four algorithms</h2>
+
+      <h3>BFS &nbsp; <small style="color:var(--muted); font-weight:400;">queue · O(V + E)</small></h3>
+      <p>
+        Breadth-first search expands all neighbours at distance <em>k</em> before
+        expanding any at distance <em>k + 1</em>.  On an <strong>unweighted</strong>
+        grid this guarantees the shortest path in cell-count.  Visually it
+        spreads outward from the start in concentric "ripples" — beautiful
+        but expensive: it explores nearly every cell at the goal's distance,
+        regardless of direction.
+      </p>
+
+      <h3>DFS &nbsp; <small style="color:var(--muted); font-weight:400;">stack · O(V + E)</small></h3>
+      <p>
+        Depth-first search goes <em>as deep as possible</em> down one branch
+        before backtracking.  It almost never finds the shortest path on a
+        grid — and when it does, that's a coincidence.  Included as a
+        cautionary tale: DFS is the right choice for many problems
+        (cycle detection, topological sort, Tarjan SCC) but pathfinding
+        is not one of them.
+      </p>
+
+      <h3>Dijkstra &nbsp; <small style="color:var(--muted); font-weight:400;">priority queue · O((V + E) log V)</small></h3>
+      <p>
+        Dijkstra's algorithm generalises BFS to handle <strong>weighted</strong>
+        edges by always expanding the cell with the lowest cost-so-far.
+        On an unweighted grid (every step costs 1) Dijkstra <em>is</em> BFS —
+        the visual exploration patterns are essentially identical.  The
+        important thing is what changes when you add weights: BFS breaks,
+        Dijkstra still works.
+      </p>
+
+      <h3>A* &nbsp; <small style="color:var(--muted); font-weight:400;">priority queue + heuristic · same upper bound</small></h3>
+      <p>
+        A* is Dijkstra plus a heuristic: instead of expanding by
+        <code>g</code> (cost so far), it expands by
+        <code>f = g + h</code> where <code>h</code> is an admissible
+        estimate of remaining distance to the goal.  With Manhattan distance
+        on a 4-neighbour grid, <code>h</code> is admissible and tight, so A*
+        ploughs efficiently toward the goal — usually expanding a fraction
+        of the cells BFS / Dijkstra would touch.  When walls force a detour
+        you'll see A* "spread out" temporarily as the heuristic gets
+        misleading, then re-focus.
+      </p>
+
+      <div class="note">
+        <div class="label">TIE-BREAKING TRICK</div>
+        Without it, A* on a flat grid produces zig-zag staircase paths
+        because many cells share the same <code>f</code> value.  This
+        implementation breaks ties by adding a tiny multiple of the
+        cross-product between (start → goal) and (current → goal) to the
+        priority key — favouring cells that lie close to the straight line
+        between start and goal.  The result is visibly straighter paths
+        without affecting correctness.
+      </div>
+
+      <h2>What I learned writing this</h2>
       <ul>
-        <li>Why A*'s heuristic-guided search reaches the goal with fewer expanded cells than Dijkstra.</li>
-        <li>Why BFS finds shortest paths on unweighted grids but loses optimality the moment you introduce edge weights.</li>
-        <li>Why DFS is *terrible* at finding shortest paths — even though it always finds *a* path eventually.</li>
-        <li>What happens to A* as you swap Manhattan distance for Euclidean, Chebyshev, or no heuristic at all.</li>
+        <li>
+          <strong>BFS and Dijkstra look identical on an unweighted grid because they are.</strong>
+          When every step costs 1, "smallest <code>f</code>" reduces to "first added" —
+          same FIFO order, same exploration. The interesting differences only
+          show up the moment edge weights stop being equal.
+        </li>
+        <li>
+          <strong>A* without tie-breaking produces ugly paths.</strong>
+          Mathematically correct, visually chaotic. The cross-product
+          tie-breaker is one of those tiny tricks that turns a working
+          algorithm into a presentable one.
+        </li>
+        <li>
+          <strong>"Expanded count" is a fairer efficiency metric than wall-clock.</strong>
+          Wall-clock conflates algorithm complexity with priority-queue
+          implementation. Counting node expansions tells you how cleverly
+          the algorithm pruned; counting time tells you how well your code
+          plus runtime managed the data structures.
+        </li>
+        <li>
+          <strong>Sharing world state between four panels was the right call.</strong>
+          Earlier draft had each panel maintain its own walls; debugging "why
+          do BFS and DFS disagree on the same maze?" was confusing because
+          they <em>weren't</em> on the same maze. Single source of truth fixed it.
+        </li>
       </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="../shared/grid.js"></script>
+  <script src="pathfinding.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>

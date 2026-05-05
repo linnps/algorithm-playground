@@ -1,0 +1,96 @@
+.pf-board {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+@media (max-width: 720px) {
+  .pf-board { grid-template-columns: 1fr; }
+}
+
+.pf-panel {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 10px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.pf-panel.dim {
+  opacity: 0.35;
+  filter: saturate(0.4);
+}
+
+.pf-panel .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px;
+}
+.pf-panel .name {
+  font-weight: 700; color: var(--title); font-size: 14px;
+}
+.pf-panel .complexity {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px; color: var(--muted);
+}
+.pf-panel .stats {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; color: var(--text);
+  margin-top: 1px;
+}
+.pf-panel .stats .ok    { color: var(--title); }
+.pf-panel .stats .fail  { color: var(--accent); }
+.pf-panel .stats .label { color: var(--muted); margin-right: 4px; }
+.pf-panel .stats .sep   { color: var(--light); margin: 0 6px; }
+
+.pf-panel canvas {
+  width: 100%;
+  height: 280px;
+  display: block;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  margin-top: 6px;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.pf-panel canvas.moving-start { cursor: grab; }
+.pf-panel canvas.moving-goal  { cursor: grab; }
+
+.pf-legend {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--muted);
+  margin: 16px 0 4px 0;
+}
+.pf-legend .item { display: flex; align-items: center; gap: 6px; }
+.pf-legend .swatch {
+  display: inline-block;
+  width: 12px; height: 12px; border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* legend swatches — match algorithm rendering */
+.pf-legend .sw-wall    { background: var(--text); }
+.pf-legend .sw-start   { background: var(--title); }
+.pf-legend .sw-goal    { background: var(--accent); }
+.pf-legend .sw-visited { background: #9EB7D6; }
+.pf-legend .sw-frontier{ background: #D88080; }
+.pf-legend .sw-path    { background: var(--accent); }
+
+/* control labels for heuristic dropdown etc. */
+.controls select {
+  background: var(--bg);
+  border: 1px solid var(--light);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.help {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 6px;
+}
