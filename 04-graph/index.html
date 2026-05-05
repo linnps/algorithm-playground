@@ -4,37 +4,162 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Graph Traversal · Algorithm Playground</title>
+  <meta name="description" content="BFS · DFS · topological sort · Tarjan SCC running side-by-side on a graph you can build with clicks.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="graph-page.css">
 </head>
 <body data-page="04-graph">
   <main class="page">
+
     <header class="hero">
       <h1>04 · Graph Traversal &amp; Topology</h1>
-      <p class="tagline">BFS · DFS · topological sort · Tarjan's SCC — all on the same graph.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Click on the canvas to add nodes; drag between nodes to add directed
-        edges. With the graph in place, run BFS / DFS / topological sort /
-        Tarjan SCC and watch nodes coloured by traversal depth, finish order,
-        or strongly-connected component.
+      <p class="tagline">
+        BFS · DFS · topological sort · Tarjan SCC — same graph · four lenses on its structure.
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <section>
+      <div class="controls">
+        <label>
+          <span>Speed <span class="value" id="speed-value">4×</span></span>
+          <input type="range" id="speed" min="1" max="20" value="4" step="1">
+        </label>
+        <button id="reset">Restart</button>
+        <button id="seed-graph" class="secondary">Seed example DAG</button>
+        <button id="clear-graph" class="secondary">Clear graph</button>
+        <button id="pause" class="secondary">Pause</button>
+        <div class="checks" id="algo-checks"><!-- populated by JS --></div>
+      </div>
+
+      <p class="gp-help">
+        <strong>Build your graph in any panel:</strong>
+        <kbd>click</kbd> empty space to add a node ·
+        <kbd>drag from one node to another</kbd> to add a directed edge
+        (drop on the same node for a self-loop) ·
+        <kbd>right-click a node</kbd> to delete it (and its incident edges).
+        Edits propagate to all four panels and auto-restart the run.
+      </p>
+    </section>
+
+    <section>
+      <div class="gp-board" id="gp-board">
+        <!-- 4 panels injected here -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        All four panels render the same graph structure (same nodes, same
+        edges).  They differ in the <em>colouring</em> each algorithm
+        applies to the nodes once it finishes.  Below each panel,
+        <code>result</code> states the algorithm's output in a sentence —
+        the BFS depth range, the DFS finish order, the topological order
+        (or "cycle detected"), the SCC count and group sizes.
+      </p>
+
+      <h2>The four algorithms</h2>
+
+      <h3>BFS &nbsp;
+        <small style="color:var(--muted); font-weight:400;">queue · O(V + E)</small></h3>
+      <p>
+        Layer-by-layer exploration.  Colour each node by its BFS depth from
+        the start (or its layer in its connected component, if the graph
+        has multiple).  Useful for finding shortest paths in unweighted
+        graphs — and as the lens that reveals "how spread out" a graph is.
+      </p>
+
+      <h3>DFS &nbsp;
+        <small style="color:var(--muted); font-weight:400;">stack / recursion · O(V + E)</small></h3>
+      <p>
+        Goes deep, then backtracks.  Colour each node by its <em>finish-time
+        rank</em> — the order in which DFS completed processing it.  This
+        is the foundation that topological sort and Tarjan SCC build on.
+      </p>
+
+      <h3>Topological sort &nbsp;
+        <small style="color:var(--muted); font-weight:400;">DAG only · O(V + E)</small></h3>
+      <p>
+        Produces a linear ordering of the nodes such that every edge goes
+        from earlier to later in the sequence.  Implemented as DFS with
+        post-order push — the topological order is the reverse of the
+        finish order.  Only defined on a <strong>DAG</strong>; if the
+        graph contains a cycle, this panel turns red and reports
+        <em>"cycle detected — no topological order exists"</em>.
+      </p>
+
+      <h3>Tarjan strongly-connected components &nbsp;
+        <small style="color:var(--muted); font-weight:400;">DFS + lowlink · O(V + E)</small></h3>
+      <p>
+        Finds maximal sets of nodes that are mutually reachable
+        (strongly connected components).  A DAG has one SCC per node;
+        a cyclic graph has one or more multi-node SCCs.  Each
+        component gets a distinct colour; sizes are reported in
+        the result line.
+      </p>
+
+      <div class="note">
+        <div class="label">TRY THIS</div>
+        Start with the seeded DAG (5 nodes, 5 edges, no cycles).
+        Topological sort succeeds; Tarjan finds 5 single-node SCCs.
+        Now add an edge from the rightmost node back to the leftmost
+        (creates a cycle through all 5 nodes).
+        Topological sort fails immediately; Tarjan groups all 5 nodes
+        into one SCC.
+      </div>
+
+      <h2>Why these four are presented together</h2>
+      <p>
+        BFS and DFS are the two <em>traversal primitives</em> — every
+        graph algorithm in this list (and many others) is a small
+        modification of one of them.  Topological sort is "DFS with
+        post-order push."  Tarjan SCC is "DFS with discovery-time +
+        lowlink tracking."  Seeing them on the same graph makes the
+        family resemblance visible: each algorithm is the same skeleton
+        with different bookkeeping.
+      </p>
+
+      <h2>What I learned writing this</h2>
       <ul>
-        <li>BFS layers vs DFS chains — same graph, completely different shape of exploration.</li>
-        <li>Topological sort only exists when the graph has no cycles — the algorithm itself doubles as a cycle detector.</li>
-        <li>Tarjan's SCC is one of those algorithms that looks magical until you realize it's "DFS plus two integer arrays."</li>
+        <li>
+          <strong>The "colour by output" pattern is the right visual abstraction
+          for graph algorithms.</strong>  Animating step-by-step (like sorting
+          or pathfinding) feels jittery on a graph because the camera doesn't
+          move — instead, settle for "here's where each node ended up,"
+          coloured by the algorithm's verdict.  That's much easier to read.
+        </li>
+        <li>
+          <strong>Tarjan's lowlink update is one-liner that does a lot of work.</strong>
+          <code>low[v] = min(low[v], idx[w])</code> on a back-edge propagates
+          "the earliest ancestor any descendant of v can reach."  Every other
+          piece of the algorithm follows from that single rule.
+        </li>
+        <li>
+          <strong>Topological sort and Tarjan SCC look almost identical in code</strong>
+          — both DFS, both yield on discover/finish.  Their outputs diverge
+          only because Tarjan's stack/lowlink groups SCCs while topo's
+          post-order push gives a sequence.
+        </li>
+        <li>
+          <strong>Building the graph by mouse is harder than expected.</strong>
+          Distinguishing "click empty" from "drag from node to node" needs
+          a small movement threshold (5px) <em>plus</em> mousedown-target
+          tracking.  Without the threshold, every click misregisters as a
+          micro-drag; without target tracking, drag-from-empty creates
+          ghost edges.
+        </li>
       </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="../shared/graph.js"></script>
+  <script src="graph-page.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>
