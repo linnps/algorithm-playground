@@ -88,10 +88,14 @@ algorithm-playground/
 │   ├── index.html
 │   ├── heap.css
 │   └── heap.js             ← max-heap (tree+array) + heapsort vs quicksort race
+├── 08-dp/                  ← live
+│   ├── index.html
+│   ├── dp.css
+│   └── dp.js               ← LCS / edit distance / 0-1 knapsack
 ├── shared/
 │   ├── grid.js             ← reusable grid widget (#02 #03)
 │   └── graph.js            ← reusable directed-graph widget (#04)
-├── 08-dp/ ... 10-geometry/  ← stubs ("coming soon")
+├── 09-string/ ... 10-geometry/  ← stubs ("coming soon")
 ├── README.md
 ├── LICENSE                 ← MIT
 └── .nojekyll               ← skip Jekyll on Pages
