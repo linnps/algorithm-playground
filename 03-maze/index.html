@@ -4,38 +4,163 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maze Generation · Algorithm Playground</title>
+  <meta name="description" content="DFS · Prim's · Kruskal's · Wilson's — four maze-generation algorithms carving the same grid, each producing a visually distinct style.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="maze.css">
 </head>
 <body data-page="03-maze">
   <main class="page">
+
     <header class="hero">
       <h1>03 · Maze Generation</h1>
-      <p class="tagline">Four classic algorithms · same grid · radically different mazes.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-        Reuses the grid renderer built for #02 Pathfinding.
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Recursive DFS · Prim's · Kruskal's · Wilson's all carve a maze of
-        configurable size. The same algorithms produce visually distinct
-        styles — DFS makes long winding corridors, Prim's makes spiky
-        offshoots, Kruskal's looks chaotic, Wilson's is slowest but
-        produces an unbiased uniform-spanning-tree maze.
+      <p class="tagline">
+        Same starting grid · same end goal (a spanning tree of the rooms) · four algorithms · four visibly different mazes.
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <section>
+      <div class="controls">
+        <label>
+          <span>Speed <span class="value" id="speed-value">8×</span></span>
+          <input type="range" id="speed" min="1" max="40" value="8" step="1">
+        </label>
+        <button id="reset">Generate fresh mazes</button>
+        <button id="pause" class="secondary">Pause</button>
+        <div class="checks" id="algo-checks"><!-- populated by JS --></div>
+      </div>
+      <p class="help">
+        All four algorithms start from the <strong>same fully-walled grid</strong>
+        (13 × 8 logical rooms). They differ only in which wall to carve next —
+        and that single choice produces dramatically different maze styles.
+      </p>
+    </section>
+
+    <section>
+      <div class="maze-board" id="maze-board">
+        <!-- 4 panels injected here -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        Every algorithm here is solving the same problem: pick a
+        <em>spanning tree</em> of the room graph (where rooms are vertices and
+        the wall between two adjacent rooms is an edge). The algorithm carves
+        each chosen edge, leaving exactly enough passages to reach every room
+        with no loops. The maze that pops out is just <em>which</em> spanning
+        tree got picked — and that's where the bias of the algorithm becomes
+        visible.
+      </p>
+
+      <div class="note">
+        <div class="label">GRID MAPPING</div>
+        Logical room <code>(R, C)</code> sits at grid coordinates
+        <code>(2R, 2C)</code>. The wall between adjacent rooms
+        <code>(R₁, C₁)</code> and <code>(R₂, C₂)</code> sits at
+        <code>(R₁+R₂, C₁+C₂)</code>. Every cell with both odd row and odd
+        column is a "wall corner" that stays a wall forever.
+      </div>
+
+      <h2>The four algorithms</h2>
+
+      <h3>Recursive-backtracker DFS &nbsp;
+        <small style="color:var(--muted); font-weight:400;">stack-based · biased toward long corridors</small></h3>
+      <p>
+        Pick a starting room. Walk to a random unvisited neighbour, carving
+        the wall between. When stuck, backtrack and try another direction.
+        The bias produces <strong>long winding corridors</strong> with
+        relatively few branches — visually the most "labyrinthine" style of
+        the four. Maze game designers often pick this one for that feel.
+      </p>
+
+      <h3>Prim's &nbsp;
+        <small style="color:var(--muted); font-weight:400;">random frontier expansion · spiky branches</small></h3>
+      <p>
+        Maintain a "frontier" of walls between the in-maze region and the
+        outside. Repeatedly pick a frontier wall at random; if it leads to
+        an unvisited room, carve. The result is a maze with
+        <strong>many short branches sticking out</strong> from a roughly
+        compact core — visibly different from DFS's long snakes.
+      </p>
+
+      <h3>Kruskal's &nbsp;
+        <small style="color:var(--muted); font-weight:400;">union-find on shuffled edges · uniform-looking</small></h3>
+      <p>
+        Generate every wall between adjacent rooms, shuffle the list,
+        process them in order. For each wall, if the two rooms it separates
+        belong to different components (checked via union-find), carve the
+        wall and merge. The result has <strong>no obvious local pattern</strong>:
+        no preferred direction, no preferred branch length. Looks the most
+        "natural" of the four.
+      </p>
+
+      <h3>Wilson's &nbsp;
+        <small style="color:var(--muted); font-weight:400;">loop-erased random walks · uniform spanning tree</small></h3>
+      <p>
+        The sophisticated one. Start with one cell already "in maze." Pick any
+        other cell, do a random walk, and whenever the walk crosses itself,
+        <em>erase the loop</em>. When the walk eventually reaches the in-maze
+        region, carve the loop-erased path and add all its cells to the
+        in-maze set. Repeat until every cell is in.
+      </p>
+      <p>
+        Mathematically, this is the <em>only</em> one of the four that produces
+        a <strong>truly uniform random spanning tree</strong> — every possible
+        maze topology is equally likely. The other three are biased toward
+        certain shapes. The cost: it's by far the slowest, especially in the
+        early iterations when the in-maze region is still small.
+      </p>
+
+      <h2>Why this is interesting</h2>
+      <p>
+        These algorithms touch a surprising number of CS topics:
+      </p>
       <ul>
-        <li>How spanning-tree algorithms double as maze-generation algorithms.</li>
-        <li>The bias-vs-uniformity trade-off: a "naturally biased" maze is fast to generate but visually predictable; a uniform maze takes longer but feels random.</li>
+        <li><strong>Graph theory</strong>: maze gen is spanning-tree construction in disguise.</li>
+        <li><strong>Disjoint-set / union-find</strong>: Kruskal's is the canonical example.</li>
+        <li><strong>Random walks &amp; loop erasure</strong>: Wilson's is closely related to electrical-network theory.</li>
+        <li><strong>Algorithmic bias visualisation</strong>: same problem, four answers, each with a recognisable visual signature.</li>
       </ul>
+
+      <h2>What I learned writing this</h2>
+      <ul>
+        <li>
+          <strong>The room/wall mapping is half the work.</strong> Once
+          <code>(R, C) → (2R, 2C)</code> and "wall between rooms is at
+          their midpoint coordinates" are clear in code, all four
+          algorithms drop in trivially.
+        </li>
+        <li>
+          <strong>Wilson's runs slowly at first, then accelerates.</strong>
+          When the maze contains few cells, random walks have to travel
+          a long way to find any in-maze cell. As more cells get added,
+          the walks shorten dramatically — the last 30 % of cells finish
+          almost instantly.
+        </li>
+        <li>
+          <strong>Kruskal's looks the most "natural" because it has
+          the fewest priors.</strong> No preferred direction, no preferred
+          shape. It's the maze-generation equivalent of a uniform prior.
+        </li>
+        <li>
+          <strong>You can already feel #04's primitives forming.</strong>
+          Union-find from Kruskal's, BFS from #02, frontier expansion from
+          Prim's — these are the building blocks for graph algorithms in
+          general. The next page will lift them into a more general graph view.
+        </li>
+      </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="../shared/grid.js"></script>
+  <script src="maze.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>

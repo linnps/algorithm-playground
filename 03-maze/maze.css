@@ -1,0 +1,56 @@
+/* Maze panels — same layout shape as pathfinding (2x2 grid) but its own
+   class so the two pages can evolve independently. */
+
+.maze-board {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+@media (max-width: 720px) {
+  .maze-board { grid-template-columns: 1fr; }
+}
+
+.maze-panel {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 10px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.maze-panel.dim {
+  opacity: 0.35;
+  filter: saturate(0.4);
+}
+
+.maze-panel .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px;
+}
+.maze-panel .name {
+  font-weight: 700; color: var(--title); font-size: 14px;
+}
+.maze-panel .character {
+  font-size: 10.5px; color: var(--muted);
+  font-style: italic;
+}
+.maze-panel .stats {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; color: var(--text);
+  margin-top: 1px;
+}
+.maze-panel .stats .label { color: var(--muted); margin-right: 4px; }
+.maze-panel .stats .sep   { color: var(--light); margin: 0 6px; }
+.maze-panel .stats .ok    { color: var(--title); }
+.maze-panel .stats .done  { color: var(--accent); font-weight: 700; }
+
+.maze-panel canvas {
+  width: 100%;
+  height: 240px;
+  display: block;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  margin-top: 6px;
+}
