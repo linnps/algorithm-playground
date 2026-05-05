@@ -5,7 +5,7 @@
 **Interactive CS algorithm visualizations · pure HTML/JS · runs anywhere · no build step**
 
 [![Live site](https://img.shields.io/badge/live-linnps.github.io%2Falgorithm--playground-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
-[![Status](https://img.shields.io/badge/status-6%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
+[![Status](https://img.shields.io/badge/status-7%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
 [![License](https://img.shields.io/badge/license-MIT-7A7A7A?style=flat-square)](LICENSE)
 
 </div>
@@ -31,7 +31,7 @@ runs entirely in your browser.
 | 04 | **Graph traversal** — BFS · DFS · topological sort · Tarjan SCC | [🟢 live](https://linnps.github.io/algorithm-playground/04-graph/) | Click to build a directed graph; four algorithms colour nodes by their verdict. |
 | 05 | **Self-balancing trees** — BST · AVL · Red-Black | [🟢 live](https://linnps.github.io/algorithm-playground/05-trees/) | Same insertion sequence; "PATHOLOGICAL" warning lights up when BST degenerates. |
 | 06 | **Hash tables** — chaining · linear probing · cuckoo | [🟢 live](https://linnps.github.io/algorithm-playground/06-hash/) | Load-factor slider; bad-hash toggle reveals strategy weaknesses. |
-| 07 | Heap & priority queue | 🟡 planned | Sift-up / sift-down + heapsort vs quicksort. |
+| 07 | **Heap & priority queue** | [🟢 live](https://linnps.github.io/algorithm-playground/07-heap/) | Tree+array dual view; insert/extract animated; heapsort vs quicksort race. |
 | 08 | Dynamic programming — LCS · edit distance · knapsack | 🟡 planned | DP table animated cell-by-cell. |
 | 09 | String matching — KMP · Rabin-Karp · vs naive | 🟡 planned | Failure function build + match. |
 | 10 | Computational geometry — Graham scan convex hull | 🟡 planned | Click to drop points. |
@@ -84,10 +84,14 @@ algorithm-playground/
 │   ├── index.html
 │   ├── hash.css
 │   └── hash.js             ← chaining / linear probing / cuckoo
+├── 07-heap/                ← live
+│   ├── index.html
+│   ├── heap.css
+│   └── heap.js             ← max-heap (tree+array) + heapsort vs quicksort race
 ├── shared/
 │   ├── grid.js             ← reusable grid widget (#02 #03)
 │   └── graph.js            ← reusable directed-graph widget (#04)
-├── 07-heap/ ... 10-geometry/   ← stubs ("coming soon")
+├── 08-dp/ ... 10-geometry/  ← stubs ("coming soon")
 ├── README.md
 ├── LICENSE                 ← MIT
 └── .nojekyll               ← skip Jekyll on Pages
@@ -129,7 +133,7 @@ python3 -m http.server 8080      # → http://localhost:8080/
 ## Roadmap
 
 Remaining sections in the order they'll ship:
-**Heap → DP → Strings → Geometry.**
+**DP → Strings → Geometry.**
 The order maximises code reuse — later algorithms inherit infrastructure
 (grid renderer, tree layout, etc.) built earlier.
 
