@@ -1,0 +1,92 @@
+.heap-section {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 12px 14px 14px 14px;
+  margin-top: 18px;
+}
+
+.heap-section .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px;
+}
+.heap-section .name {
+  font-weight: 700; color: var(--title); font-size: 14px;
+}
+.heap-section .stats {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; color: var(--text);
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  margin-top: 1px;
+}
+.heap-section .stats .label { color: var(--muted); margin-right: 4px; }
+
+.heap-section canvas {
+  width: 100%;
+  height: 320px;
+  display: block;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.heap-input {
+  width: 90px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: ui-monospace, Menlo, Monaco, monospace;
+  background: var(--bg);
+  border: 1px solid var(--light);
+  border-radius: 4px;
+  color: var(--text);
+}
+.heap-input:focus {
+  outline: none;
+  border-color: var(--title);
+}
+
+/* Race section */
+.race-board {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+@media (max-width: 720px) {
+  .race-board { grid-template-columns: 1fr; }
+}
+
+.race-panel {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 10px 12px 12px 12px;
+}
+.race-panel .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px;
+}
+.race-panel .name {
+  font-weight: 700; color: var(--title); font-size: 14px;
+}
+.race-panel .complexity {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px; color: var(--muted);
+}
+.race-panel .ops {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; color: var(--text);
+  margin-top: 2px;
+}
+.race-panel .ops .done {
+  display: inline-block; margin-left: 8px;
+  color: var(--accent); font-weight: 700;
+}
+.race-panel canvas {
+  width: 100%;
+  height: 160px;
+  display: block;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  margin-top: 6px;
+}

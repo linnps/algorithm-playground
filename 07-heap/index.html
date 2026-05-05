@@ -4,39 +4,185 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Heap &amp; Priority Queue · Algorithm Playground</title>
+  <meta name="description" content="Binary max-heap visualised both as tree and array. Insert / extract animated. Heapsort vs quicksort race below.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="heap.css">
 </head>
 <body data-page="07-heap">
   <main class="page">
+
     <header class="hero">
       <h1>07 · Heap &amp; Priority Queue</h1>
-      <p class="tagline">Binary heap as an array · sift-up &amp; sift-down · heapsort vs quicksort.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-        Reuses tree-rendering from #05.
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Watch insertions trigger sift-up and extractions trigger sift-down,
-        with the array view and the tree view kept in sync side-by-side.
-        Then a heapsort-vs-quicksort race using the same starting data —
-        showing heapsort's predictable n log n vs quick's faster average
-        but variable wall-time.
+      <p class="tagline">
+        Binary max-heap · same data, two views (tree above, array below) ·
+        plus heapsort vs quicksort.
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <!-- ============================================================ Section 1 -->
+    <section class="heap-section">
+      <div class="head">
+        <span class="name">Heap operations</span>
+        <span class="complexity" style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: var(--muted);">
+          insert · extract-max · O(log n)
+        </span>
+      </div>
+
+      <div class="controls" style="margin-top: 8px;">
+        <input type="number" id="heap-input" class="heap-input" placeholder="value" min="0" max="999">
+        <button id="heap-insert">Insert</button>
+        <button id="heap-extract">Extract max</button>
+        <button id="heap-random10" class="secondary">+10 random</button>
+        <button id="heap-clear" class="secondary">Clear</button>
+        <label>
+          <span>Anim speed <span class="value" id="heap-speed-value">10×</span></span>
+          <input type="range" id="heap-speed" min="2" max="40" value="10" step="1"
+                 oninput="document.getElementById('heap-speed-value').textContent = this.value + '×'">
+        </label>
+      </div>
+
+      <div class="stats">
+        <span><span class="label">size</span><span id="heap-size">0</span></span>
+        <span><span class="label">max</span><span id="heap-max">—</span></span>
+        <span><span class="label">ops since last reset</span><span id="heap-ops">0</span></span>
+        <span style="color: var(--muted);"><span id="heap-last">ready</span></span>
+      </div>
+
+      <canvas id="heap-canvas"></canvas>
+    </section>
+
+    <!-- ============================================================ Section 2 -->
+    <section style="margin-top: 28px;">
+      <h2>Heapsort vs Quicksort</h2>
+      <p>
+        Same starting array (28 random values), two algorithms in their
+        own panels.  Both finish in <em>O(n log n)</em> on average — but
+        heapsort gives a worst-case guarantee, while quicksort is faster
+        on typical inputs at the cost of an O(n²) worst case.  The "ops"
+        counter is comparison + swap events; it's a fair efficiency proxy
+        that doesn't depend on wall-clock or browser scheduling.
+      </p>
+
+      <div class="controls">
+        <button id="race-restart">Shuffle &amp; restart</button>
+        <label>
+          <span>Speed <span class="value" id="race-speed-value">8×</span></span>
+          <input type="range" id="race-speed" min="1" max="40" value="8" step="1"
+                 oninput="document.getElementById('race-speed-value').textContent = this.value + '×'">
+        </label>
+      </div>
+
+      <div class="race-board" id="race-board"><!-- 2 panels injected --></div>
+    </section>
+
+    <!-- ============================================================ Educational -->
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        A binary heap is a complete binary tree in which every parent is
+        ≥ both children (max-heap).  The clever bit: because the tree is
+        complete, you can store it in an array — node <code>i</code>'s
+        children sit at <code>2i + 1</code> and <code>2i + 2</code>, its
+        parent sits at <code>(i − 1) / 2</code>.  The two views above are
+        the same data, just drawn differently.
+      </p>
+
+      <h2>Insert (sift-up) and extract-max (sift-down)</h2>
+
+      <h3>Insert &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(log n)</small></h3>
+      <p>
+        Append the new value at the end of the array (= bottom-right of
+        the tree). Then "sift up": compare it to its parent; if it's
+        larger, swap; repeat until it's in place or it reaches the root.
+        At most ⌈log₂ n⌉ swaps because each swap moves the value up one
+        level.
+      </p>
+
+      <h3>Extract-max &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(log n)</small></h3>
+      <p>
+        The root holds the max.  Remove it; move the very last element
+        into the root slot; "sift down": compare to children, swap with
+        the larger one if it's bigger than the parent; repeat until the
+        heap property holds again.
+      </p>
+
+      <div class="note">
+        <div class="label">SUBTLE BUT IMPORTANT</div>
+        Building a heap from scratch (heapify) is <strong>O(n)</strong>,
+        not O(n log n).  The bottom-up construction starts at level
+        ⌊n/2⌋ − 1 and sift-downs each non-leaf.  Levels with many nodes
+        have low height; levels with high height have few nodes; the
+        sum telescopes.  This is the foundation under heapsort's first
+        phase.
+      </div>
+
+      <h2>Heapsort step-by-step</h2>
+      <ol style="margin-left: 20px;">
+        <li>Heapify the input array in O(n) (the build-heap step you
+            don't see directly — happens before the first visual swap).</li>
+        <li>Swap arr[0] (the max) with arr[n − 1].  Now the largest is
+            in its final position; the heap excludes that index.</li>
+        <li>Sift-down arr[0] within the now-smaller heap.  This restores
+            the max-heap property and the new root is the next-largest.</li>
+        <li>Repeat steps 2-3 with progressively smaller heap range.
+            After n − 1 iterations, the array is sorted in place.</li>
+      </ol>
+
+      <div class="note">
+        <div class="label">WHY HEAPSORT WHEN QUICKSORT EXISTS</div>
+        Quicksort's average case is faster (better cache behaviour, smaller
+        constant factors). Heapsort's draw is the <em>worst-case
+        guarantee</em>: O(n log n) regardless of input, no
+        adversarial-input pathology. Linux's CFS scheduler, real-time
+        kernels, and several language standard libraries' "fall-back when
+        quicksort goes pathological" branches all use heapsort
+        (or introsort, which is "quicksort that switches to heapsort if
+        recursion goes too deep").
+      </div>
+
+      <h2>What I learned writing this</h2>
       <ul>
-        <li>How a binary heap is just an array with three index arithmetic rules: parent <code>(i-1)/2</code>, left <code>2i+1</code>, right <code>2i+2</code>.</li>
-        <li>Why building a heap is O(n), not O(n log n) — bottom-up sift-down dominates.</li>
-        <li>When you'd actually pick heap sort over quick sort: when worst-case latency matters more than average throughput.</li>
+        <li>
+          <strong>The dual array+tree visualisation pays for itself.</strong>
+          The tree view is what makes "sift up swaps with parent" visceral;
+          the array view is what makes "the heap is just an array, you
+          haven't allocated any tree" obvious.  Either alone is incomplete.
+        </li>
+        <li>
+          <strong>Generators clean up the animation logic dramatically.</strong>
+          <code>yield { type: "compare", a, b }</code> from inside the natural
+          algorithm body, and a single tick loop drives the highlighting.  No
+          state machines, no manual pause-and-resume.
+        </li>
+        <li>
+          <strong>Floyd's bottom-up heapify is one of those "trust the math"
+          moments.</strong> You'd guess O(n log n) by inspection (n calls
+          × log n each).  The actual bound is O(n) by carefully summing
+          height × count-at-height across all levels.  The visual version
+          here uses the synchronous form during "+10 random" — too fast to
+          watch but verifiably correct.
+        </li>
+        <li>
+          <strong>"Worst-case O(n log n)" matters in surprising places.</strong>
+          For a one-off sort on random data, the choice between heapsort
+          and quicksort is invisible.  But anywhere a malicious input
+          could force pathological quicksort behaviour (e.g., handling
+          untrusted input, real-time guarantees), heapsort's bound is the
+          safety net.
+        </li>
       </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="heap.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>
