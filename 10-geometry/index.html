@@ -4,37 +4,173 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Computational Geometry · Algorithm Playground</title>
+  <meta name="description" content="Graham's scan convex hull — click to drop points, watch the polar sort and the cross-product test build the hull.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="geometry.css">
 </head>
 <body data-page="10-geometry">
   <main class="page">
+
     <header class="hero">
       <h1>10 · Computational Geometry</h1>
-      <p class="tagline">Convex hull · click points · watch Graham's scan trace the boundary.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Click anywhere on the canvas to drop points. The Graham-scan
-        convex hull recomputes live, with the angular-sort step animated
-        and the cross-product test highlighting which candidate edges
-        get popped from the stack.
+      <p class="tagline">
+        Graham's scan · click points · cross-product test decides every turn
       </p>
-      <h2>What it teaches</h2>
-      <ul>
-        <li>The convex hull is the simplest non-trivial computational-geometry problem and a gateway to sweep-line techniques.</li>
-        <li>Why the cross-product test (rather than angle comparisons) is the right primitive — it's exact in integer arithmetic and avoids floating-point drift.</li>
-        <li>Graham scan's O(n log n) is dominated by the angular sort; the hull-construction sweep itself is O(n).</li>
+    </header>
+
+    <section>
+      <div class="controls">
+        <button id="run">Run</button>
+        <button id="pause" class="secondary">Pause</button>
+        <button id="reset" class="secondary">Reset</button>
+        <label>
+          <span>Speed <span class="value" id="speed-value">8×</span></span>
+          <input type="range" id="speed" min="1" max="40" value="8" step="1">
+        </label>
+      </div>
+
+      <div class="controls geo-presets" style="margin-top: 8px;">
+        <span style="font-size:12px; color:var(--muted); margin-right:4px;">load:</span>
+        <button class="secondary" data-preset="random">25 random</button>
+        <button class="secondary" data-preset="pentagon">convex pentagon · no pops</button>
+        <button class="secondary" data-preset="ring">ring + interior · many pops</button>
+        <button class="secondary" data-preset="spiral">spiral · lots of pops</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="geo-board" id="geo-board">
+        <!-- panel injected -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        The algorithm runs in three visible phases:
+      </p>
+      <ol style="margin-left: 20px;">
+        <li><strong>Pivot search</strong> — sweep through every point to find
+            the bottom-most one (greatest screen y; ties broken by smallest x).
+            That point is guaranteed on the hull.</li>
+        <li><strong>Polar sort</strong> — gray rays fan out from the pivot to
+            every other point.  The algorithm then sorts them by polar angle
+            (counterclockwise, math sense).  This is the O(n log n) step.</li>
+        <li><strong>Scan</strong> — walk the sorted list, pushing points onto
+            a stack.  Before each push, while the top two stack points and
+            the candidate would make a non-CCW turn, the top is popped.
+            Each candidate triggers a flashing dashed triangle: blue if it's
+            kept (left turn), red if the top of stack is popped (right turn).</li>
+      </ol>
+
+      <div class="note">
+        <div class="label">RECOMMENDED PRESET</div>
+        <strong>"spiral · lots of pops"</strong>:
+        the scan starts pushing eagerly, then begins popping as later
+        candidates reveal that earlier ones were inside the hull all along.
+        It's the clearest demo of why the cross-product test matters —
+        you can read off "left or right turn?" by eye.
+      </div>
+
+      <h2>Why the cross-product test?</h2>
+      <p>
+        Every step of Graham's scan reduces to one question: <em>given
+        three points O, A, B, does the path O&nbsp;→&nbsp;A&nbsp;→&nbsp;B turn left or right?</em>
+        The textbook approach — compute angles with <code>atan2</code>, compare
+        them — is wrong twice over: it's slow (transcendental) and it accumulates
+        floating-point error.  The cross product
+      </p>
+      <p style="text-align:center; font-family:'JetBrains Mono', ui-monospace, monospace; font-size:14px;">
+        cross(O, A, B) &nbsp;=&nbsp; (A<sub>x</sub> − O<sub>x</sub>)(B<sub>y</sub> − O<sub>y</sub>) − (A<sub>y</sub> − O<sub>y</sub>)(B<sub>x</sub> − O<sub>x</sub>)
+      </p>
+      <p>
+        decides the turn direction with two multiplies and a subtract — and
+        if the inputs are integers, the result is exact.  Sign convention
+        (in screen coords with y pointing down):
+      </p>
+      <ul style="margin-left: 20px;">
+        <li><code>&lt; 0</code> &nbsp;O→A→B is a <strong>left turn</strong> (counterclockwise visually).  Keep.</li>
+        <li><code>&gt; 0</code> &nbsp;O→A→B is a <strong>right turn</strong> (clockwise visually).  Pop.</li>
+        <li><code>= 0</code> &nbsp;collinear.  Pop (the middle point isn't extreme).</li>
       </ul>
+      <p>
+        The same primitive doubles as the polar-angle comparator: if
+        <code>cross(pivot, A, B) &lt; 0</code> then A is more CCW than B.
+        No angles ever get computed.
+      </p>
+
+      <h2>Reading the panel</h2>
+      <ul style="margin-left: 20px;">
+        <li><strong>Pivot</strong>: dark blue dot, labelled.  Stays on the
+            hull throughout.</li>
+        <li><strong>Hull-so-far</strong>: blue polyline; closes into a
+            translucent polygon when the algorithm finishes.</li>
+        <li><strong>Candidate</strong>: red dot, labelled.  This is the
+            point the scan is currently trying to push.</li>
+        <li><strong>Test triangle</strong>: dashed lines from
+            <code>second-of-stack → top-of-stack → candidate</code>.
+            Red = right turn, top will be popped.  Blue = left turn, candidate
+            will be pushed.</li>
+        <li><strong>Cross value</strong>: shown live next to the test triangle
+            and in the stats row.</li>
+      </ul>
+
+      <h2>Complexity</h2>
+      <p>
+        Graham's scan is O(n log n) overall — but the <code>O(n log n)</code> comes
+        entirely from the polar sort.  The actual hull-construction sweep is
+        O(n) amortised: each point is pushed at most once and popped at most
+        once.  The visualisation makes this concrete: the comparison counter
+        ticks fast during sort, then slows to a crawl during scan even
+        though the visualisation is doing more.
+      </p>
+
+      <h2>What I learned writing this</h2>
+      <ul>
+        <li>
+          <strong>Screen coordinates flip the cross-product sign.</strong>
+          Math convention has y pointing up, so <code>cross &gt; 0</code>
+          means CCW.  In a canvas with y pointing down, that exact same
+          formula gives <code>cross &lt; 0</code> for visually-CCW.  The
+          algorithm doesn't need to convert — just remember to flip the
+          inequality.  I burnt half an hour on this before pinning down the
+          sign with a paper triangle.
+        </li>
+        <li>
+          <strong>Insertion sort beats merge sort for visualization.</strong>
+          The textbook calls for O(n log n) sort, but insertion sort makes
+          every comparison and every swap visible as a single animation
+          step.  The pedagogical clarity wins over the asymptotic difference
+          (and at n &lt; 50, insertion sort is faster anyway).
+        </li>
+        <li>
+          <strong>The pivot guarantees correctness.</strong>  Picking the
+          bottom-most point ensures every other point has a <em>defined</em>
+          polar angle (no point sits at angle "undefined" because it's the
+          origin of the angle).  Plus, that point is provably on the hull,
+          so it's a safe anchor to start the stack from.  Most algorithm
+          textbooks gloss over this — but it's the load-bearing structural
+          choice.
+        </li>
+        <li>
+          <strong>Visualizing collinear points is awkward.</strong>  The
+          algorithm has to handle "cross = 0" (three points in a line),
+          but visually they look identical to two points — there's no
+          obvious "turn" to draw.  I settled for treating collinear like a
+          right turn (pop the middle), which is correct because the middle
+          point isn't on the hull.
+        </li>
+      </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="geometry.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>

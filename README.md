@@ -5,7 +5,7 @@
 **Interactive CS algorithm visualizations · pure HTML/JS · runs anywhere · no build step**
 
 [![Live site](https://img.shields.io/badge/live-linnps.github.io%2Falgorithm--playground-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
-[![Status](https://img.shields.io/badge/status-9%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
+[![Status](https://img.shields.io/badge/status-10%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
 [![License](https://img.shields.io/badge/license-MIT-7A7A7A?style=flat-square)](LICENSE)
 
 </div>
@@ -34,7 +34,7 @@ runs entirely in your browser.
 | 07 | **Heap & priority queue** | [🟢 live](https://linnps.github.io/algorithm-playground/07-heap/) | Tree+array dual view; insert/extract animated; heapsort vs quicksort race. |
 | 08 | **Dynamic programming** — LCS · edit distance · knapsack | [🟢 live](https://linnps.github.io/algorithm-playground/08-dp/) | Single shared DP-table renderer; cell-by-cell fill, then red traceback. |
 | 09 | **String matching** — KMP vs naive substring search | [🟢 live](https://linnps.github.io/algorithm-playground/09-string/) | Failure function builds left-to-right, then matching jumps cleverly on mismatch. |
-| 10 | Computational geometry — Graham scan convex hull | 🟡 planned | Click to drop points. |
+| 10 | **Computational geometry** — Graham scan convex hull | [🟢 live](https://linnps.github.io/algorithm-playground/10-geometry/) | Click to drop points; cross-product test decides every turn. |
 
 ---
 
@@ -96,10 +96,13 @@ algorithm-playground/
 │   ├── index.html
 │   ├── string.css
 │   └── string.js           ← KMP (failure function + match) vs naive
+├── 10-geometry/            ← live
+│   ├── index.html
+│   ├── geometry.css
+│   └── geometry.js         ← Graham scan convex hull, click-to-drop points
 ├── shared/
 │   ├── grid.js             ← reusable grid widget (#02 #03)
 │   └── graph.js            ← reusable directed-graph widget (#04)
-├── 10-geometry/            ← stub ("coming soon")
 ├── README.md
 ├── LICENSE                 ← MIT
 └── .nojekyll               ← skip Jekyll on Pages
@@ -138,12 +141,6 @@ python3 -m http.server 8080      # → http://localhost:8080/
 
 ---
 
-## Roadmap
-
-Remaining: **Geometry** (Graham scan convex hull) — the final piece.
-
----
-
 <div align="center">
-<sub>Built with vanilla web platform features. MIT licensed.</sub>
+<sub>All ten demos shipped. Built with vanilla web platform features. MIT licensed.</sub>
 </div>
