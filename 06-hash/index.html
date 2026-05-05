@@ -4,38 +4,170 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hash Tables · Algorithm Playground</title>
+  <meta name="description" content="Chaining vs linear probing vs cuckoo hashing — three collision-resolution strategies side by side.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="hash.css">
 </head>
 <body data-page="06-hash">
   <main class="page">
+
     <header class="hero">
       <h1>06 · Hash Tables</h1>
-      <p class="tagline">Chaining · linear probing · cuckoo hashing — collision resolution made visible.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        A row of buckets, three side-by-side panels — one per collision-resolution
-        strategy. Insert keys and watch each strategy distribute them differently.
-        A load-factor slider shows how each strategy degrades as the table fills:
-        chaining stays graceful, linear probing develops "clusters,"
-        cuckoo hashing eventually fails to insert and triggers a rehash.
+      <p class="tagline">
+        Chaining · linear probing · cuckoo hashing — three strategies, same key stream, very different load-factor behaviour.
       </p>
-      <h2>What it teaches</h2>
+    </header>
+
+    <section>
+      <div class="controls">
+        <button id="add1">Add 1 key</button>
+        <button id="add5" class="secondary">Add 5</button>
+
+        <label>
+          <span>Fill to load factor <span class="value" id="lf-target-value">70%</span></span>
+          <input type="range" id="lf-target" min="10" max="95" value="70" step="5">
+        </label>
+        <button id="addToLF" class="secondary">Apply</button>
+
+        <button id="reset" class="secondary">Reset</button>
+
+        <label style="flex-direction: row; align-items: center; gap: 6px; cursor: pointer;">
+          <input type="checkbox" id="bad-hash">
+          <span style="color: var(--text); font-size: 13px;">use bad hash <code style="color: var(--muted);">(k % size)</code></span>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <div class="hash-board" id="hash-board">
+        <!-- 3 panels injected by hash.js -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        All three tables use the same N = 16 buckets and receive the same
+        randomly-generated stream of keys.  They differ in what to do when
+        two keys hash to the same bucket.  Stats above each panel update
+        live: load factor, item count, and the strategy-specific
+        worst-case metric (longest chain · longest probe · last cuckoo
+        eviction count).
+      </p>
+      <p>
+        The default hash function is Knuth's multiplicative hash with the
+        golden-ratio constant, which gives near-uniform distribution.
+        Toggle "use bad hash <code>(k % size)</code>" to see the same
+        load factor cause much worse collision concentration when the
+        hash function has poor mixing — primarily a problem when keys
+        are sequential.
+      </p>
+
+      <h2>The three strategies</h2>
+
+      <h3>Chaining &nbsp;
+        <small style="color:var(--muted); font-weight:400;">linked list per bucket · graceful degradation</small></h3>
+      <p>
+        Each bucket holds a list of every key that hashed to it.
+        Lookup is "find bucket, then linear search within."  Average
+        case stays O(1) as long as the load factor stays modest;
+        worst case is O(n) when every key collides.  Doesn't degrade
+        catastrophically — load factor &gt; 1 just makes chains longer,
+        and the table never "fills up."
+      </p>
+
+      <h3>Linear probing &nbsp;
+        <small style="color:var(--muted); font-weight:400;">single slot per bucket · cluster-prone</small></h3>
+      <p>
+        Each bucket holds at most one key.  On collision, walk forward
+        (wrapping at the end of the array) until you find an empty
+        slot.  Lookup follows the same walk.  Cache-friendly because
+        the walk is sequential memory access — but degrades sharply
+        past ~70% load factor: clusters of occupied slots merge into
+        bigger clusters, dramatically increasing the average probe
+        distance (this is "primary clustering").
+      </p>
+
+      <h3>Cuckoo hashing &nbsp;
+        <small style="color:var(--muted); font-weight:400;">two tables, two hashes · O(1) worst-case lookup</small></h3>
+      <p>
+        Use two independent hash functions and two parallel tables.
+        On insert: try table 1 at <code>h₁(k)</code>; if occupied,
+        evict the previous tenant, push the new key in, then re-place
+        the evicted tenant in table 2 at <code>h₂(k')</code>.  Repeat
+        if that one is also occupied.  Lookup is O(1) <strong>worst-case</strong>
+        — every key sits at exactly one of two known slots — but
+        insertion can chain through many evictions, and if the chain
+        loops forever the table needs a rehash.  Cuckoo's effective
+        capacity caps near 50% load on its primary table.
+      </p>
+
+      <div class="note">
+        <div class="label">TRY THIS</div>
+        <ul style="margin:8px 0 0 20px;">
+          <li>Hit "Apply" with target 70% — chaining and cuckoo handle it cleanly; probing's longest-probe metric jumps.</li>
+          <li>Push the slider to 90% and apply — probing's longest probe explodes; cuckoo will hit "INSERT FAILED" and stop.</li>
+          <li>Toggle "use bad hash" then add 16 keys — chaining piles up in one bucket, probing forms one giant cluster, cuckoo cycles forever and fails fast.</li>
+        </ul>
+      </div>
+
+      <h2>What's a "good" hash function</h2>
+      <p>
+        A good hash function spreads keys nearly uniformly across buckets.
+        The golden-ratio multiplicative hash used here —
+        <code>h(k) = (k × 2654435761) mod size</code> — has the property
+        that consecutive keys land in widely-separated buckets, because
+        2654435761 ≈ 2³² × (φ − 1) is irrational-mod-anything-power-of-2.
+        The "bad hash" toggle replaces this with <code>k mod size</code>,
+        which is strict residue: consecutive keys produce consecutive
+        bucket indices, immediately destroying the uniform-distribution
+        property that all three strategies depend on.
+      </p>
+
+      <h2>What I learned writing this</h2>
       <ul>
-        <li>Why a "good" hash function matters more than people think — bad hashes turn linear probing into linked lists.</li>
-        <li>The clustering effect: linear probing's cost grows non-linearly past ~70% load factor.</li>
-        <li>Cuckoo hashing's elegant guarantee — O(1) lookup worst case, even under collisions, at the cost of O(amortized) insertions.</li>
+        <li>
+          <strong>Linear probing's degradation is non-linear.</strong>
+          You can sit at 50% load with average probe ≈ 1.5; cross 70%
+          and the average probe shoots toward 5; at 90% it's 50+.
+          This is because clusters merge: the more occupied a region,
+          the more likely a new collision lands in it, extending it
+          further. The doubling-when-half-full convention has a real
+          basis: load factor of 0.5 is the safe operating point.
+        </li>
+        <li>
+          <strong>Cuckoo's win is in lookups, not inserts.</strong>
+          Insert can be slow (or fail entirely under high load),
+          but lookup is two array accesses, period — no probing,
+          no chain walking.  In workloads where reads dominate writes
+          and worst-case latency matters, cuckoo wins despite the insert
+          cost.
+        </li>
+        <li>
+          <strong>Chaining is the most forgiving choice and the most
+          memory-hungry.</strong>  Linked-list overhead per element,
+          poor cache locality, but it never "breaks" — load factor 2.0,
+          5.0, 10.0 all work, just with linearly more lookup cost.
+        </li>
+        <li>
+          <strong>Switching to a bad hash makes the strategy choice
+          almost irrelevant — they all degrade.</strong>  Hash quality
+          dominates the strategy choice in practice, which is why language
+          standard libraries (Python's dict, Java's HashMap) ship with
+          quite sophisticated hash functions.  You can't compensate for
+          a bad hash by picking a clever resolution scheme.
+        </li>
       </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="hash.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>
