@@ -4,37 +4,212 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dynamic Programming · Algorithm Playground</title>
+  <meta name="description" content="LCS · edit distance · 0/1 knapsack — the DP table fills cell-by-cell, then a red traceback path shows the optimal solution.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="dp.css">
 </head>
 <body data-page="08-dp">
   <main class="page">
+
     <header class="hero">
       <h1>08 · Dynamic Programming</h1>
-      <p class="tagline">LCS · edit distance · 0/1 knapsack — DP table fills cell-by-cell.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Type two strings (for LCS / edit distance) or items + weights
-        (for knapsack). The 2D DP table fills cell-by-cell, colour
-        gradient by value, with the optimal traceback path lit up in
-        red after the table completes.
+      <p class="tagline">
+        LCS · edit distance · 0/1 knapsack — three classic DP tables fill cell-by-cell, then traceback in red.
       </p>
-      <h2>What it teaches</h2>
-      <ul>
-        <li>The mental shift from "recursive with memoization" (top-down) to "iteratively fill the table" (bottom-up) — same answer, different code shape.</li>
-        <li>Why DP problems often have an obvious recurrence but a non-obvious traceback — the table tells you the cost; the path through the table tells you the solution.</li>
-        <li>The space-optimization trick: most DP tables only need the previous row, so O(n²) space → O(n) is often free.</li>
+    </header>
+
+    <section class="dp-section">
+      <div class="head">
+        <span class="name" id="dp-section-title">Longest Common Subsequence</span>
+        <span class="answer" id="dp-answer">
+          <span class="pending">click "Run" to fill the DP table</span>
+        </span>
+      </div>
+
+      <div class="controls" style="margin-top: 8px;">
+        <select id="dp-problem" class="dp-select">
+          <option value="lcs">LCS — Longest Common Subsequence</option>
+          <option value="edit">Edit Distance (Levenshtein)</option>
+          <option value="knapsack">0 / 1 Knapsack</option>
+        </select>
+        <button id="dp-run">Run</button>
+        <button id="dp-reset" class="secondary">Reset</button>
+        <label>
+          <span>Speed <span class="value" id="dp-speed-value">8×</span></span>
+          <input type="range" id="dp-speed" min="1" max="40" value="8" step="1">
+        </label>
+      </div>
+
+      <!-- string inputs (LCS / edit) -->
+      <div class="input-row" id="dp-input-strings" style="margin-top: 10px;">
+        <label>
+          <span>String A</span>
+          <input type="text" id="dp-A" class="dp-input" value="ABCBDAB" maxlength="20">
+        </label>
+        <label>
+          <span>String B</span>
+          <input type="text" id="dp-B" class="dp-input" value="BDCABA" maxlength="20">
+        </label>
+      </div>
+
+      <!-- knapsack inputs -->
+      <div class="input-row" id="dp-input-knapsack" style="margin-top: 10px; display: none;">
+        <label>
+          <span>Weights (comma-separated)</span>
+          <input type="text" id="dp-weights" class="dp-input" value="2, 3, 4, 5" maxlength="40">
+        </label>
+        <label>
+          <span>Values</span>
+          <input type="text" id="dp-values" class="dp-input" value="3, 4, 5, 6" maxlength="40">
+        </label>
+        <label>
+          <span>Capacity W</span>
+          <input type="number" id="dp-W" class="dp-input" value="9" min="0" max="30" style="min-width:80px;">
+        </label>
+      </div>
+
+      <!-- presets -->
+      <div class="controls dp-presets" style="margin-top: 8px; gap: 6px;">
+        <span style="font-size:12px; color:var(--muted); margin-right:4px;">try:</span>
+        <button class="secondary" data-problem="lcs"  data-a="ABCBDAB" data-b="BDCABA">LCS · classic</button>
+        <button class="secondary" data-problem="lcs"  data-a="HUMAN"   data-b="CHIMPANZEE">LCS · "HUMAN" vs "CHIMPANZEE"</button>
+        <button class="secondary" data-problem="edit" data-a="kitten"  data-b="sitting">edit · kitten→sitting</button>
+        <button class="secondary" data-problem="edit" data-a="intention" data-b="execution">edit · intention→execution</button>
+        <button class="secondary" data-problem="knapsack" data-weights="2, 3, 4, 5" data-values="3, 4, 5, 6" data-capacity="9">knapsack · 4 items, W=9</button>
+        <button class="secondary" data-problem="knapsack" data-weights="1, 2, 3, 4, 5, 7" data-values="1, 4, 5, 7, 8, 11" data-capacity="10">knapsack · 6 items, W=10</button>
+      </div>
+
+      <canvas id="dp-canvas"></canvas>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        A DP table is a 2-D array indexed by sub-problem coordinates.
+        Each cell stores the answer to one sub-problem; later cells
+        combine earlier cells' answers via a recurrence.  Watching the
+        cells fill, in order, makes the recurrence concrete: every cell's
+        value comes from at most three other cells (its top, left, and
+        diagonal neighbours, depending on the problem).  The
+        <span style="color:var(--accent); font-weight:700;">red path</span>
+        at the end is the <em>traceback</em> — the chain of cells whose
+        decisions add up to the optimal answer at the bottom-right corner.
+      </p>
+
+      <h2>The three problems</h2>
+
+      <h3>Longest Common Subsequence (LCS) &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(mn)</small></h3>
+      <p>
+        Given two strings A and B of length m and n, find the longest
+        sequence of characters that appears in both, in order (but not
+        necessarily contiguous). Recurrence:
+      </p>
+      <ul style="margin-left: 24px; font-family: ui-monospace, Menlo, monospace; font-size: 13px;">
+        <li>dp[i][j] = 0 &nbsp; if i = 0 or j = 0</li>
+        <li>dp[i][j] = dp[i-1][j-1] + 1 &nbsp; if A[i-1] = B[j-1]</li>
+        <li>dp[i][j] = max(dp[i-1][j], dp[i][j-1]) &nbsp; otherwise</li>
       </ul>
+      <p>
+        Final answer is at dp[m][n].  Traceback walks diagonally on a
+        match, otherwise to whichever neighbour holds the larger value.
+      </p>
+
+      <h3>Edit (Levenshtein) Distance &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(mn)</small></h3>
+      <p>
+        Minimum number of single-character edits (insert / delete /
+        substitute) to turn A into B.  Recurrence:
+      </p>
+      <ul style="margin-left: 24px; font-family: ui-monospace, Menlo, monospace; font-size: 13px;">
+        <li>dp[i][0] = i, dp[0][j] = j</li>
+        <li>dp[i][j] = dp[i-1][j-1] &nbsp; if A[i-1] = B[j-1]</li>
+        <li>dp[i][j] = 1 + min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1])</li>
+      </ul>
+      <p>
+        The three options at each non-match cell correspond to the three
+        edit operations: substitute (diagonal), delete (up), insert (left).
+      </p>
+
+      <h3>0/1 Knapsack &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(nW)</small></h3>
+      <p>
+        Given n items with weights and values, and a knapsack of capacity
+        W, pick a subset of items maximising total value while keeping
+        total weight ≤ W. The "0/1" means each item is either taken
+        whole or not at all.  Recurrence:
+      </p>
+      <ul style="margin-left: 24px; font-family: ui-monospace, Menlo, monospace; font-size: 13px;">
+        <li>dp[i][w] = 0 &nbsp; if i = 0 or w = 0</li>
+        <li>dp[i][w] = dp[i-1][w] &nbsp; if weight[i-1] &gt; w &nbsp; <em>(can't fit)</em></li>
+        <li>dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight[i-1]] + value[i-1])</li>
+      </ul>
+      <p>
+        Note this is <em>pseudo-polynomial</em>: O(nW), where W is the
+        numerical capacity, not the input size in bits.  When W is huge,
+        DP becomes infeasible — the problem is actually NP-hard
+        in the general case.
+      </p>
+
+      <div class="note">
+        <div class="label">WHY THE TRACEBACK MATTERS</div>
+        Filling the table tells you the cost / count of the optimal
+        solution.  But to actually <em>recover</em> that solution
+        (which characters in the LCS, which edit operations, which items
+        in the knapsack) you need a second pass that walks back from the
+        final cell, deciding at each step which neighbour was the
+        predecessor.  The red path on the canvas above is exactly that
+        second pass.
+      </div>
+
+      <h2>What I learned writing this</h2>
+      <ul>
+        <li>
+          <strong>"DP solves a problem by filling a table" is a slogan
+          worth seeing.</strong>  The recurrences are short — three to four
+          lines each — but watching cells light up in row-major order and
+          seeing how each new cell consults a small number of already-filled
+          cells makes the local-recurrence-becomes-global-answer pattern
+          concrete in a way the formulas alone don't.
+        </li>
+        <li>
+          <strong>Edit distance's traceback is more delicate than LCS's.</strong>
+          LCS goes diagonal on a match, then picks the larger neighbour.
+          Edit distance has three predecessor options; you have to pick
+          the one whose value equals the recurrence (i.e., the cheapest
+          cause of the current cell).  Easy to off-by-one when the
+          neighbours all have the same value — you have to commit to a
+          tie-breaking order or the path can become inconsistent.
+        </li>
+        <li>
+          <strong>Knapsack tables can get big fast.</strong>  Even small
+          inputs (n=10, W=20) produce 11×21 = 231 cells.  When you push
+          W up by a factor of 100, the table grows by the same factor.
+          Hence "pseudo-polynomial" — the table size depends on the
+          numerical value of an input, not its bit-length.  In practice
+          this is when memoisation + only the recently-needed rows
+          (O(W) space instead of O(nW)) becomes essential.
+        </li>
+        <li>
+          <strong>Colour-by-value is a useful diagnostic.</strong>  When
+          the LCS table is mostly the same shade of pale blue with a
+          gradient toward the bottom-right, you can <em>see</em> the
+          cumulative-max nature of the recurrence.  When the edit-distance
+          table forms a diagonal stripe, the two strings share a common
+          spine.  These visual signatures are easier to read than scanning
+          the numbers.
+        </li>
+      </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="dp.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>
