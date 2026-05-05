@@ -4,39 +4,168 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>String Matching · Algorithm Playground</title>
+  <meta name="description" content="KMP vs naive substring matching, side-by-side. Failure function builds first; matching jumps cleverly on mismatch.">
   <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="string.css">
 </head>
 <body data-page="09-string">
   <main class="page">
+
     <header class="hero">
       <h1>09 · String Matching</h1>
-      <p class="tagline">KMP · Rabin-Karp · vs naive O(nm) — watch where the magic happens.</p>
-    </header>
-    <section>
-      <div class="note">
-        <div class="label">COMING SOON</div>
-      </div>
-      <h2>Planned interactive demo</h2>
-      <p>
-        Pick a haystack and a needle. KMP first builds its failure
-        function (animated), then the matching pass — when a mismatch
-        occurs, the needle <em>slides</em> by the failure-function offset
-        instead of restarting from zero. Side-by-side with naive O(nm),
-        you can see KMP completing matches the naive algorithm is still
-        chewing through.
+      <p class="tagline">
+        KMP vs naive · same haystack · same needle · who finishes with fewer comparisons?
       </p>
-      <h2>What it teaches</h2>
-      <ul>
-        <li>The failure function is the key insight: pre-compute "if I fail at position k of the needle, how far back can I safely jump?"</li>
-        <li>Why Rabin-Karp's rolling hash makes it preferred for multi-pattern matching — KMP wins for one pattern; Rabin-Karp wins for many.</li>
-        <li>How a problem that looks like O(nm) becomes O(n+m) once you stop throwing away information.</li>
+    </header>
+
+    <section>
+      <div class="controls">
+        <label>
+          <span>Haystack</span>
+          <input type="text" id="haystack-input" class="str-input"
+                 value="ABABDABACDABABCABAB" maxlength="40">
+        </label>
+        <label>
+          <span>Needle</span>
+          <input type="text" id="needle-input" class="str-input"
+                 value="ABABCABAB" maxlength="20" style="min-width:140px;">
+        </label>
+        <button id="run">Search</button>
+        <button id="pause" class="secondary">Pause</button>
+        <label>
+          <span>Speed <span class="value" id="speed-value">8×</span></span>
+          <input type="range" id="speed" min="1" max="40" value="8" step="1">
+        </label>
+      </div>
+
+      <div class="controls str-presets" style="margin-top: 8px;">
+        <span style="font-size:12px; color:var(--muted); margin-right:4px;">try:</span>
+        <button class="secondary" data-haystack="ABABDABACDABABCABAB"      data-needle="ABABCABAB">classic CLRS example</button>
+        <button class="secondary" data-haystack="AAAAAAAAAAAAAAAAB"          data-needle="AAAAB">KMP advantage · sparse needle</button>
+        <button class="secondary" data-haystack="ABCDEFGHIJ"                 data-needle="EFG">simple match</button>
+        <button class="secondary" data-haystack="ABABABABABABABABABABCABAB"  data-needle="ABABCABAB">multiple potential anchors</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="str-board" id="str-board">
+        <!-- 2 panels injected -->
+      </div>
+    </section>
+
+    <section>
+      <h2>What you're watching</h2>
+      <p>
+        Both algorithms search for the needle inside the haystack and
+        report every match position.  They produce identical results;
+        they differ only in <em>how many character comparisons</em> they
+        do along the way.  The "comparisons" stat above each panel is
+        the fair efficiency metric.
+      </p>
+
+      <div class="note">
+        <div class="label">RECOMMENDED PRESET</div>
+        <strong>"KMP advantage · sparse needle"</strong>
+        (haystack <code>AAAAAAAAAAAAAAAAB</code>, needle <code>AAAAB</code>):
+        the naive algorithm re-scans almost every character on every
+        failed alignment — its comparison count blows up.  KMP's failure
+        function records that "after matching <code>AAAA</code>, you've
+        already established the next 4 characters in the needle should
+        also start with <code>AAAA</code>" and skips ahead efficiently.
+        The comparison-count gap is the entire point of KMP.
+      </div>
+
+      <h2>The two algorithms</h2>
+
+      <h3>Naive substring search &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(n·m) worst case</small></h3>
+      <p>
+        For every position <code>i</code> in <code>0..n-m</code>, try
+        matching the needle character by character against
+        <code>haystack[i..i+m-1]</code>.  On any mismatch, slide the
+        needle one position right and start over.  Each haystack character
+        can be re-examined up to m times — hence the O(nm) worst case.
+        Easy to implement, never fast.
+      </p>
+
+      <h3>Knuth-Morris-Pratt (KMP) &nbsp;
+        <small style="color:var(--muted); font-weight:400;">O(n + m)</small></h3>
+      <p>
+        Pre-compute a <em>failure function</em> for the needle in O(m):
+        <code>failure[q]</code> is the length of the longest proper prefix
+        of <code>needle[0..q]</code> that is also a suffix of it.  This
+        encodes "if I've matched the first q+1 characters of the needle
+        and then mismatch at q+1, how many of those q characters can I
+        keep using as a free head-start on the next attempt?"
+      </p>
+      <p>
+        During matching, on a mismatch at needle position <code>q</code>,
+        instead of restarting we set <code>q = failure[q-1]</code> and
+        retry from there.  No haystack character is ever re-examined,
+        so total time is O(n + m).
+      </p>
+
+      <h2>Reading the panels</h2>
+      <ul style="margin-left: 20px;">
+        <li><strong>Top row</strong>: haystack characters.  The currently-compared
+            character is highlighted blue (match) or red (mismatch).
+            Past matches' span is filled solid blue.</li>
+        <li><strong>Middle row</strong>: needle, slid into its current
+            anchor position relative to the haystack.  Already-matched
+            prefix is filled blue.</li>
+        <li><strong>Bottom row (KMP only)</strong>: the failure function
+            array, one value per needle character.  Filled live during
+            the build phase, then read-only during matching.</li>
+        <li><strong>Connecting line</strong>: drawn between the two characters
+            currently being compared.  Blue on a match, red on a mismatch.</li>
       </ul>
+
+      <h2>What I learned writing this</h2>
+      <ul>
+        <li>
+          <strong>The failure function is the entire algorithm.</strong>
+          Once you have <code>failure[]</code>, the match phase is six lines
+          of code: while-loop with a single conditional jump.  The trick
+          KMP gets the credit for is a one-time O(m) pre-computation that
+          encodes everything you need to know about the needle's
+          self-similarity structure.
+        </li>
+        <li>
+          <strong>Building the failure function is itself a KMP-on-the-needle.</strong>
+          The build loop has the same structure as the match loop:
+          a "candidate length" k that gets reduced via fail[k-1] on
+          mismatch.  The needle scans against a shifted copy of itself,
+          discovering its own internal repetitions.  Self-referential and
+          a little magical.
+        </li>
+        <li>
+          <strong>Naive's pathology is on inputs that look like patterns
+          KMP shines on.</strong>  Random text rarely triggers naive's
+          O(nm) — most mismatches happen at j=0 or j=1, so the slide-by-1
+          isn't expensive.  KMP's real win is on highly self-similar
+          needles (lots of "AAAA"-like prefixes).  The "KMP advantage"
+          preset above is the canonical example.
+        </li>
+        <li>
+          <strong>Visualising the failure function is harder than visualising
+          its use.</strong>  The build phase has nested logic: outer q
+          advances, inner k bounces backward.  Drawing arrows for that gets
+          messy; I settled for showing failure[] as a strip of numbers
+          that fill in left-to-right, with the current q highlighted.
+          The reader can mentally connect the dots without seeing every
+          internal jump.
+        </li>
+      </ul>
+
       <p style="margin-top:24px;">
         <a href="../">← Back to all algorithms</a>
       </p>
     </section>
+
   </main>
+
   <script src="../shared/nav.js"></script>
+  <script src="string.js"></script>
   <script src="../shared/footer.js"></script>
 </body>
 </html>

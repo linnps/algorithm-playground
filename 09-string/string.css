@@ -1,0 +1,63 @@
+.str-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.str-panel {
+  background: var(--bg);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 10px 12px 12px 12px;
+}
+.str-panel.dim {
+  opacity: 0.35;
+  filter: saturate(0.4);
+}
+
+.str-panel .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px; gap: 12px; flex-wrap: wrap;
+}
+.str-panel .name {
+  font-weight: 700; color: var(--title); font-size: 14px;
+}
+.str-panel .complexity {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px; color: var(--muted);
+}
+.str-panel .stats {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; color: var(--text);
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  margin-top: 1px;
+}
+.str-panel .stats .label  { color: var(--muted); margin-right: 4px; }
+.str-panel .stats .ok     { color: var(--title); font-weight: 600; }
+.str-panel .stats .found  { color: var(--accent); font-weight: 700; }
+.str-panel .stats .phase  { color: var(--accent); font-weight: 700; }
+
+.str-panel canvas {
+  width: 100%;
+  height: 200px;
+  display: block;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.str-input {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: ui-monospace, Menlo, Monaco, monospace;
+  background: var(--bg);
+  border: 1px solid var(--light);
+  border-radius: 4px;
+  color: var(--text);
+  min-width: 200px;
+}
+.str-input:focus {
+  outline: none;
+  border-color: var(--title);
+}

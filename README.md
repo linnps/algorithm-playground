@@ -5,7 +5,7 @@
 **Interactive CS algorithm visualizations · pure HTML/JS · runs anywhere · no build step**
 
 [![Live site](https://img.shields.io/badge/live-linnps.github.io%2Falgorithm--playground-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
-[![Status](https://img.shields.io/badge/status-8%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
+[![Status](https://img.shields.io/badge/status-9%2F10%20live-3B6EA8?style=flat-square)](https://linnps.github.io/algorithm-playground/)
 [![License](https://img.shields.io/badge/license-MIT-7A7A7A?style=flat-square)](LICENSE)
 
 </div>
@@ -33,7 +33,7 @@ runs entirely in your browser.
 | 06 | **Hash tables** — chaining · linear probing · cuckoo | [🟢 live](https://linnps.github.io/algorithm-playground/06-hash/) | Load-factor slider; bad-hash toggle reveals strategy weaknesses. |
 | 07 | **Heap & priority queue** | [🟢 live](https://linnps.github.io/algorithm-playground/07-heap/) | Tree+array dual view; insert/extract animated; heapsort vs quicksort race. |
 | 08 | **Dynamic programming** — LCS · edit distance · knapsack | [🟢 live](https://linnps.github.io/algorithm-playground/08-dp/) | Single shared DP-table renderer; cell-by-cell fill, then red traceback. |
-| 09 | String matching — KMP · Rabin-Karp · vs naive | 🟡 planned | Failure function build + match. |
+| 09 | **String matching** — KMP vs naive substring search | [🟢 live](https://linnps.github.io/algorithm-playground/09-string/) | Failure function builds left-to-right, then matching jumps cleverly on mismatch. |
 | 10 | Computational geometry — Graham scan convex hull | 🟡 planned | Click to drop points. |
 
 ---
@@ -92,10 +92,14 @@ algorithm-playground/
 │   ├── index.html
 │   ├── dp.css
 │   └── dp.js               ← LCS / edit distance / 0-1 knapsack
+├── 09-string/              ← live
+│   ├── index.html
+│   ├── string.css
+│   └── string.js           ← KMP (failure function + match) vs naive
 ├── shared/
 │   ├── grid.js             ← reusable grid widget (#02 #03)
 │   └── graph.js            ← reusable directed-graph widget (#04)
-├── 09-string/ ... 10-geometry/  ← stubs ("coming soon")
+├── 10-geometry/            ← stub ("coming soon")
 ├── README.md
 ├── LICENSE                 ← MIT
 └── .nojekyll               ← skip Jekyll on Pages
@@ -136,10 +140,7 @@ python3 -m http.server 8080      # → http://localhost:8080/
 
 ## Roadmap
 
-Remaining sections in the order they'll ship:
-**Strings → Geometry.**
-The order maximises code reuse — later algorithms inherit infrastructure
-(grid renderer, tree layout, etc.) built earlier.
+Remaining: **Geometry** (Graham scan convex hull) — the final piece.
 
 ---
 
